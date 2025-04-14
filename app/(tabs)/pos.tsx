@@ -9,66 +9,8 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { MenuItem } from '@/components/pos/MenuItem';
 import { CartItem } from '@/components/pos/CartItem';
 import { CategorySelector } from '@/components/pos/CategorySelector';
-
-// Define the category type
-type Category = 'Appetizers' | 'Main Courses' | 'Desserts' | 'Beverages' | 'Specials';
-
-// Define an order item type
-type OrderItem = {
-  name: string;
-  quantity: number;
-};
-
-// Categories of menu items
-const categories: Category[] = [
-  'Appetizers',
-  'Main Courses',
-  'Desserts',
-  'Beverages',
-  'Specials'
-];
-
-// Food items for each category
-const menuItems: Record<Category, string[]> = {
-  'Appetizers': [
-    'Mozzarella Sticks', 
-    'Nachos', 
-    'Chicken Wings', 
-    'Garlic Bread', 
-    'Calamari', 
-    'Spinach Dip'
-  ],
-  'Main Courses': [
-    'Burger', 
-    'Pizza', 
-    'Steak', 
-    'Pasta', 
-    'Fish & Chips', 
-    'Grilled Chicken'
-  ],
-  'Desserts': [
-    'Cheesecake', 
-    'Ice Cream', 
-    'Chocolate Cake', 
-    'Apple Pie', 
-    'Tiramisu'
-  ],
-  'Beverages': [
-    'Soda', 
-    'Coffee', 
-    'Tea', 
-    'Lemonade', 
-    'Water', 
-    'Juice',
-    'Beer',
-    'Wine'
-  ],
-  'Specials': [
-    'Daily Special', 
-    'Chef\'s Choice', 
-    'Seasonal Item'
-  ]
-};
+import { Category, OrderItem } from '@/types/pos';
+import { categories, menuItems, getCategoryIcon } from '@/constants/pos/menuData';
 
 export default function POSScreen() {
   const [selectedCategory, setSelectedCategory] = React.useState<Category>('Appetizers');
@@ -244,24 +186,6 @@ export default function POSScreen() {
       </View>
     </ThemedView>
   );
-}
-
-// Helper function to get icon for each category
-function getCategoryIcon(category: Category): string {
-  switch(category) {
-    case 'Appetizers':
-      return 'restaurant';
-    case 'Main Courses':
-      return 'fast-food';
-    case 'Desserts':
-      return 'ice-cream';
-    case 'Beverages':
-      return 'cafe';
-    case 'Specials':
-      return 'star';
-    default:
-      return 'restaurant';
-  }
 }
 
 const styles = StyleSheet.create({
