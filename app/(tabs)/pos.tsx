@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingBottom: 20,
+    justifyContent: 'flex-start', // Ensure items align properly
   },
   orderContainer: {
     flex: 1,

@@ -70,37 +70,38 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
 
 const styles = StyleSheet.create({
   menuItemContainer: {
-    width: '30%',
-    margin: '1.66%',
+    width: '22%',  // Reduced from 30% to 22%
+    margin: '1.5%', // Slightly reduced margins
     position: 'relative',
-    minHeight: 80,
+    minHeight: 60,  // Reduced from 80 to 60
   },
   menuItemButton: {
     width: '100%',
-    padding: 12,
-    borderRadius: 10,
+    padding: 8,     // Reduced from 12 to 8
+    borderRadius: 8, // Reduced from 10 to 8
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    minHeight: 80,
+    minHeight: 60,  // Reduced from 80 to 60
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 }, // Reduced shadow
     shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowRadius: 2,  // Reduced from 3 to 2
+    elevation: 2,     // Reduced from 3 to 2
   },
   itemText: {
     textAlign: 'center',
     fontWeight: '500',
+    fontSize: 13,    // Added smaller font size
   },
   minusButton: {
     position: 'absolute',
-    top: -8,
-    right: -8,
+    top: -6,           // Adjusted from -8 to -6
+    right: -6,         // Adjusted from -8 to -6
     backgroundColor: '#FF6B6B',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 20,         // Reduced from 24 to 20
+    height: 20,        // Reduced from 24 to 20
+    borderRadius: 10,  // Reduced from 12 to 10
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -112,19 +113,19 @@ const styles = StyleSheet.create({
   },
   minusButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,      // Reduced from 18 to 16
     fontWeight: 'bold',
-    lineHeight: 20,
+    lineHeight: 18,    // Reduced from 20 to 18
     textAlign: 'center',
   },
   catalogQuantityBadge: {
     position: 'absolute',
-    top: -6,
-    left: -6,
+    top: -5,           // Adjusted from -6 to -5
+    left: -5,          // Adjusted from -6 to -5
     backgroundColor: Colors.light.tint,
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
+    minWidth: 18,      // Reduced from 22 to 18
+    height: 18,        // Reduced from 22 to 18
+    borderRadius: 9,   // Reduced from 11 to 9
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
   },
   catalogQuantityText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 10,      // Reduced from 12 to 10
     fontWeight: 'bold',
   },
 });
