@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Dimensions } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -14,6 +14,12 @@ interface MenuItemProps {
 
 export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItemProps) {
   const colorScheme = useColorScheme() ?? 'light';
+  
+  // Get screen width to adjust item size
+  const screenWidth = Dimensions.get('window').width;
+  const isSmallScreen = screenWidth < 600; // Phone
+  const isMediumScreen = screenWidth >= 600 && screenWidth < 900; // Small tablet
+  const isLargeScreen = screenWidth >= 1200; // Large desktop
   
   // Get background color based on category
   const getCategoryColor = (category: string): string => {
@@ -36,11 +42,16 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
   const backgroundColor = getCategoryColor(category);
   
   return (
-    <View style={styles.menuItemContainer}>
+    <View style={[
+      styles.menuItemContainer,
+      isSmallScreen && styles.menuItemContainerSmall,
+      isMediumScreen && styles.menuItemContainerMedium,
+      isLargeScreen && styles.menuItemContainerLarge
+    ]}>
       <TouchableOpacity
         style={[
           styles.menuItemButton,
-          { 
+          {
             backgroundColor: 
               colorScheme === 'dark' 
                 ? `${backgroundColor}80` // Add transparency for dark mode
@@ -70,38 +81,58 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
 
 const styles = StyleSheet.create({
   menuItemContainer: {
-    width: '22%',  // Reduced from 30% to 22%
-    margin: '1.5%', // Slightly reduced margins
+    width: '23.5%', // Slightly adjusted to work better with space-between
+    margin: '0.5%',
     position: 'relative',
-    minHeight: 60,  // Reduced from 80 to 60
+    minHeight: 80,
+  },
+  menuItemContainerSmall: {
+    width: '48%', // Two items per row on small screens
+    margin: '1%',
+    minHeight: 80,
+    maxWidth: 'none',
+  },
+  menuItemContainerMedium: {
+    width: '31.33%', // Three items per row
+    margin: '1%',
+    minHeight: 80,
+    maxWidth: 'none', // Remove max width constraint
+  },
+  menuItemContainerLarge: {
+    width: '19%', // Five items per row on large screens
+    margin: '0.5%',
+    minHeight: 100,
+    maxWidth: 'none', // Remove max width constraint
   },
   menuItemButton: {
     width: '100%',
-    padding: 8,     // Reduced from 12 to 8
-    borderRadius: 8, // Reduced from 10 to 8
+    height: '100%',
+    padding: 12,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    minHeight: 60,  // Reduced from 80 to 60
+    minHeight: 80,
+    aspectRatio: 1, // Make buttons square
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 }, // Reduced shadow
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,  // Reduced from 3 to 2
-    elevation: 2,     // Reduced from 3 to 2
+    shadowRadius: 2,
+    elevation: 2,
   },
   itemText: {
     textAlign: 'center',
     fontWeight: '500',
-    fontSize: 13,    // Added smaller font size
+    fontSize: 14,
   },
   minusButton: {
     position: 'absolute',
-    top: -6,           // Adjusted from -8 to -6
-    right: -6,         // Adjusted from -8 to -6
+    top: -8,
+    right: -8,
     backgroundColor: '#FF6B6B',
-    width: 20,         // Reduced from 24 to 20
-    height: 20,        // Reduced from 24 to 20
-    borderRadius: 10,  // Reduced from 12 to 10
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -113,19 +144,19 @@ const styles = StyleSheet.create({
   },
   minusButtonText: {
     color: 'white',
-    fontSize: 16,      // Reduced from 18 to 16
+    fontSize: 18,
     fontWeight: 'bold',
-    lineHeight: 18,    // Reduced from 20 to 18
+    lineHeight: 20,
     textAlign: 'center',
   },
   catalogQuantityBadge: {
     position: 'absolute',
-    top: -5,           // Adjusted from -6 to -5
-    left: -5,          // Adjusted from -6 to -5
+    top: -6,
+    left: -6,
     backgroundColor: Colors.light.tint,
-    minWidth: 18,      // Reduced from 22 to 18
-    height: 18,        // Reduced from 22 to 18
-    borderRadius: 9,   // Reduced from 11 to 9
+    minWidth: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -137,7 +168,7 @@ const styles = StyleSheet.create({
   },
   catalogQuantityText: {
     color: 'white',
-    fontSize: 10,      // Reduced from 12 to 10
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });
