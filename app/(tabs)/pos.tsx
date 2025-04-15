@@ -231,7 +231,7 @@ export default function POSScreen() {
               <ThemedView style={[
                 styles.orderHeader,
                 { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
-              ]}>
+              ]} transparent={true}>
                 <View style={styles.orderHeaderTitle}>
                   <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
                   <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
@@ -289,7 +289,7 @@ export default function POSScreen() {
             <ThemedView style={[
               styles.orderHeader,
               { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
-            ]}>
+            ]} transparent={true}>
               <View style={styles.orderHeaderTitle}>
                 <TouchableOpacity 
                   onPress={toggleCart} 
