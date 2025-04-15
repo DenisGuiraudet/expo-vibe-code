@@ -5,18 +5,20 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabTwoScreen() {
+  const colorScheme = useColorScheme();
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
+        <Image
+          source={colorScheme === 'dark' 
+            ? require('@/assets/images/logo-dark.png')
+            : require('@/assets/images/logo.png')}
           style={styles.headerImage}
         />
       }>
@@ -53,7 +55,12 @@ export default function TabTwoScreen() {
           <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
           different screen densities
         </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
+        <Image 
+          source={colorScheme === 'dark' 
+            ? require('@/assets/images/logo-dark.png')
+            : require('@/assets/images/logo.png')} 
+          style={{ alignSelf: 'center', width: 100, height: 100, resizeMode: 'contain' }} 
+        />
         <ExternalLink href="https://reactnative.dev/docs/images">
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
@@ -101,10 +108,12 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+    width: 200,
+    height: 200,
+    bottom: -70,
+    left: -10,
     position: 'absolute',
+    resizeMode: 'contain',
   },
   headerRow: {
     flexDirection: 'row',

@@ -61,13 +61,6 @@ export function CategorySelector({
       : 'rgba(255, 255, 255, 0)'; // Fully transparent
   };
   
-  // Get container border color based on theme
-  const getContainerBorderColor = () => {
-    return colorScheme === 'dark'
-      ? 'rgba(70, 70, 70, 0.8)'
-      : 'rgba(180, 180, 180, 0.9)'; // Darker border in light mode
-  };
-  
   // Get text color for unselected categories based on theme
   const getUnselectedTextColor = () => {
     return colorScheme === 'dark' ? '#E0E0E0' : '#333333'; // Darker text in light mode
@@ -96,7 +89,7 @@ export function CategorySelector({
       styles.container, 
       { 
         backgroundColor: getContainerBackground(),
-        borderBottomColor: getContainerBorderColor() 
+        borderBottomColor: 'transparent'
       }
     ]}>
       {isCollapsed ? (
