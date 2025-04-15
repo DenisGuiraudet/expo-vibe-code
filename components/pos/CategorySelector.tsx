@@ -47,8 +47,8 @@ export function CategorySelector({
         : 'rgba(70, 70, 70, 0.5)';
     } else {
       return isSelected 
-        ? 'rgba(255, 255, 255, 0.8)'
-        : 'rgba(255, 255, 255, 0.5)';
+        ? 'rgba(180, 180, 180, 0.9)' // Darker border for selected in light mode
+        : 'rgba(200, 200, 200, 0.8)'; // Darker border for unselected in light mode
     }
   };
   
@@ -63,12 +63,30 @@ export function CategorySelector({
   const getContainerBorderColor = () => {
     return colorScheme === 'dark'
       ? 'rgba(70, 70, 70, 0.8)'
-      : 'rgba(255, 255, 255, 0.8)';
+      : 'rgba(180, 180, 180, 0.9)'; // Darker border in light mode
   };
   
   // Get text color for unselected categories based on theme
   const getUnselectedTextColor = () => {
-    return colorScheme === 'dark' ? '#E0E0E0' : '#333';
+    return colorScheme === 'dark' ? '#E0E0E0' : '#333333'; // Darker text in light mode
+  };
+
+  // Get background color for unselected buttons
+  const getUnselectedButtonBackground = () => {
+    return colorScheme === 'dark' 
+      ? 'rgba(50, 50, 50, 0.3)'
+      : 'rgba(230, 230, 230, 0.5)'; // More visible in light mode
+  };
+
+  // Enhanced shadow for better visibility in light mode
+  const getShadowStyle = () => {
+    return {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: colorScheme === 'dark' ? 2 : 3 },
+      shadowOpacity: colorScheme === 'dark' ? 0.15 : 0.25,
+      shadowRadius: colorScheme === 'dark' ? 5 : 6,
+      elevation: colorScheme === 'dark' ? 3 : 5,
+    };
   };
 
   return (
@@ -84,6 +102,7 @@ export function CategorySelector({
           <TouchableOpacity
             style={[
               styles.selectedButton,
+              getShadowStyle(),
               { borderColor: getButtonBorderColor(true) }
             ]}
             onPress={() => setIsCollapsed(false)}
@@ -113,6 +132,7 @@ export function CategorySelector({
               key={category}
               style={[
                 styles.categoryButton,
+                getShadowStyle(),
                 isSmallScreen && styles.categoryButtonMobile,
                 { borderColor: getButtonBorderColor(selectedCategory === category) }
               ]}
@@ -139,9 +159,7 @@ export function CategorySelector({
                 <View style={[
                   styles.categoryButtonInner,
                   { 
-                    backgroundColor: colorScheme === 'dark' 
-                      ? 'rgba(50, 50, 50, 0.3)' 
-                      : 'rgba(255, 255, 255, 0.3)' 
+                    backgroundColor: getUnselectedButtonBackground()
                   }
                 ]}>
                   <ThemedText style={[
@@ -160,10 +178,11 @@ export function CategorySelector({
             <TouchableOpacity
               style={[
                 styles.collapseButton,
+                getShadowStyle(),
                 { 
                   backgroundColor: colorScheme === 'dark' 
                     ? 'rgba(50, 50, 50, 0.5)' 
-                    : 'rgba(255, 255, 255, 0.5)',
+                    : 'rgba(230, 230, 230, 0.6)',
                   borderColor: getButtonBorderColor(false)
                 }
               ]}

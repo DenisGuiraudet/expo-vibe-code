@@ -24,9 +24,17 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
   
   // Get gradient colors based on category and theme
   const getCategoryGradient = (category: string) => {
-    // Base opacity adjustments for dark mode
-    const opacityAdjust = colorScheme === 'dark' ? 0.1 : 0.2; // Reduced opacity
-    const opacityAdjustLow = colorScheme === 'dark' ? 0.03 : 0.05; // Reduced opacity
+    // Light theme needs more opacity to be visible against snow background
+    const lightOpacityBase = 0.35;
+    const lightOpacityLow = 0.15;
+    
+    // Dark theme should be more subtle
+    const darkOpacityBase = 0.15;
+    const darkOpacityLow = 0.05;
+    
+    // Use theme-specific opacity values
+    const opacityAdjust = colorScheme === 'dark' ? darkOpacityBase : lightOpacityBase;
+    const opacityAdjustLow = colorScheme === 'dark' ? darkOpacityLow : lightOpacityLow;
     
     switch(category) {
       case 'Appetizers':
@@ -52,17 +60,32 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
       case 'Specials':
         return colorScheme === 'dark' 
           ? ['rgba(180, 160, 200, 0.15)', 'rgba(180, 160, 200, 0.05)']  // Dark purple for dark mode
-          : ['rgba(243, 229, 245, 0.3)', 'rgba(243, 229, 245, 0.15)']; // Light purple for light mode
+          : ['rgba(180, 160, 200, 0.35)', 'rgba(180, 160, 200, 0.20)']; // More visible purple for light mode
       default:
         return colorScheme === 'dark'
           ? ['rgba(70, 70, 70, 0.3)', 'rgba(50, 50, 50, 0.15)']       // Dark gray for dark mode
-          : ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']; // White for light mode
+          : ['rgba(160, 160, 160, 0.35)', 'rgba(190, 190, 190, 0.2)']; // Medium gray for light mode
     }
   };
   
-  // Determine text color based on theme
+  // Determine text color based on theme - better contrast in light mode
   const getTextColor = () => {
-    return colorScheme === 'dark' ? '#E0E0E0' : '#333';
+    return colorScheme === 'dark' ? '#E0E0E0' : '#333333';
+  };
+
+  // Shadow settings based on theme
+  const getShadowStyle = () => {
+    return colorScheme === 'dark' ? {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 5,
+    } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+    };
   };
   
   return (
@@ -75,10 +98,11 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
       <TouchableOpacity
         style={[
           styles.menuItemButton,
+          getShadowStyle(),
           { 
             borderColor: colorScheme === 'dark' 
               ? 'rgba(70, 70, 70, 0.7)' 
-              : 'rgba(255, 255, 255, 0.7)'
+              : 'rgba(200, 200, 200, 0.9)' // Stronger border in light mode
           }
         ]}
         onPress={onAdd}
@@ -107,7 +131,7 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
             { 
               borderColor: colorScheme === 'dark' 
                 ? 'rgba(70, 70, 70, 0.7)' 
-                : 'rgba(255, 255, 255, 0.7)'
+                : 'rgba(255, 255, 255, 0.9)' // Stronger border in light mode
             }
           ]}
           onPress={onRemove}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity, View, Image, Dimensions, SafeAreaView, Text, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-// Removed LinearGradient import
+import { LinearGradient } from 'expo-linear-gradient'; // Added LinearGradient import back
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -134,8 +134,13 @@ export default function POSScreen() {
       <SnowBackground intensity="medium" />
       
       <ThemedView style={styles.container}>
-        {/* Header */}
-        <ThemedView style={styles.header}>
+        {/* Header with semi-transparent background */}
+        <LinearGradient
+          colors={colorScheme === 'dark' 
+            ? ['rgba(30, 30, 30, 0.75)', 'rgba(20, 20, 20, 0.65)']
+            : ['rgba(255, 255, 255, 0.75)', 'rgba(240, 240, 240, 0.65)']}
+          style={styles.headerGradient}
+        >
           <View style={styles.headerContent}>
             <View style={styles.logoContainer}>
               <Image 
@@ -167,7 +172,7 @@ export default function POSScreen() {
               )}
             </View>
           </View>
-        </ThemedView>
+        </LinearGradient>
         
         {/* Category Selection */}
         <CategorySelector 
@@ -216,11 +221,10 @@ export default function POSScreen() {
             </ScrollView>
           </View>
           
-          {/* Order List - only visible on tablet+ by default */}
+          {/* Order List - only visible on tablet+ by default - removed background */}
           {!isSmallScreen && (
             <View style={[
               styles.orderContainer, 
-              { backgroundColor: 'transparent' }, // Changed from solid color to transparent
               { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
               { borderLeftColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
             ]}>
@@ -258,7 +262,6 @@ export default function POSScreen() {
               {orderItems.length > 0 && (
                 <ThemedView style={[
                   styles.orderSummary,
-                  { backgroundColor: 'transparent' }, // Changed from solid color to transparent
                   { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
                 ]}>
                   <View style={styles.subtotalRow}>
@@ -280,12 +283,9 @@ export default function POSScreen() {
           )}
         </View>
         
-        {/* Mobile Cart View - only visible when showCart is true */}
+        {/* Mobile Cart View - only visible when showCart is true - removed background */}
         {isSmallScreen && showCart && (
-          <View style={[
-            styles.mobileCartContainer,
-            { backgroundColor: 'transparent' } // Changed from solid color to transparent
-          ]}>
+          <View style={styles.mobileCartContainer}>
             <ThemedView style={[
               styles.orderHeader,
               { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
@@ -331,7 +331,6 @@ export default function POSScreen() {
             {orderItems.length > 0 && (
               <ThemedView style={[
                 styles.orderSummary,
-                { backgroundColor: 'transparent' }, // Changed to transparent to show snow
                 { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
               ]}>
                 <View style={styles.subtotalRow}>
@@ -366,16 +365,29 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     backgroundColor: 'transparent',
   },
-  header: {
-    padding: 16,
+  headerGradient: {
+    width: '100%',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 128, 171, 0.3)', // Soft pink border
-    backgroundColor: 'transparent',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
+    marginBottom: 0, // Remove margin if it was there
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+  },
+  header: {
+    padding: 0, // Removed padding since it's moved to headerGradient
+    backgroundColor: 'transparent',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    borderBottomWidth: 0,
   },
   headerContent: {
     flexDirection: 'row',
@@ -495,6 +507,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 16,
     borderWidth: 1,
+    backgroundColor: 'transparent', // Explicitly set to transparent
   },
   mobileCartContainer: {
     position: 'absolute',
@@ -505,6 +518,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: 16,
     paddingTop: 0,
+    backgroundColor: 'transparent', // Explicitly set to transparent
   },
   orderHeader: {
     flexDirection: 'row',
@@ -566,6 +580,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    backgroundColor: 'transparent', // Explicitly set to transparent
   },
   subtotalRow: {
     flexDirection: 'row',

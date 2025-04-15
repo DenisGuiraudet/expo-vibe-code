@@ -18,26 +18,43 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
   // Get gradient colors based on theme
   const getGradientColors = () => {
     return colorScheme === 'dark'
-      ? ['rgba(50, 50, 50, 0.4)', 'rgba(40, 40, 40, 0.2)'] // More transparent
-      : ['rgba(255, 255, 255, 0.4)', 'rgba(255, 255, 255, 0.2)']; // More transparent
+      ? ['rgba(50, 50, 50, 0.4)', 'rgba(40, 40, 40, 0.2)'] 
+      : ['rgba(220, 220, 220, 0.6)', 'rgba(240, 240, 240, 0.4)']; // More visible in light mode
   };
 
   // Get border color based on theme
   const getBorderColor = () => {
     return colorScheme === 'dark'
       ? 'rgba(70, 70, 70, 0.8)'
-      : 'rgba(255, 255, 255, 0.7)';
+      : 'rgba(190, 190, 190, 0.9)'; // Darker border in light mode
+  };
+
+  // Get bottom border color for item
+  const getBottomBorderColor = () => {
+    return colorScheme === 'dark' 
+      ? 'rgba(129, 212, 250, 0.15)' 
+      : 'rgba(129, 212, 250, 0.5)'; // More visible in light mode
   };
   
+  // Enhanced shadow for better visibility in light mode
+  const getShadowStyle = () => {
+    return {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: colorScheme === 'dark' ? 2 : 3 },
+      shadowOpacity: colorScheme === 'dark' ? 0.1 : 0.2,
+      shadowRadius: colorScheme === 'dark' ? 4 : 6,
+      elevation: colorScheme === 'dark' ? 2 : 4,
+    };
+  };
+
   return (
     <LinearGradient
       colors={getGradientColors()}
       style={[
         styles.orderItemGradient,
+        getShadowStyle(),
         { 
-          borderBottomColor: colorScheme === 'dark' 
-            ? 'rgba(129, 212, 250, 0.15)' 
-            : 'rgba(129, 212, 250, 0.3)',
+          borderBottomColor: getBottomBorderColor(),
           borderColor: getBorderColor()
         }
       ]}
@@ -48,7 +65,7 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
           <TouchableOpacity
             style={[
               styles.orderMinusButton,
-              { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.7)' }
+              { borderColor: getBorderColor() }
             ]}
             onPress={onRemove}
           >
@@ -61,7 +78,7 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
           </TouchableOpacity>
           <ThemedText style={[
             styles.quantityText, 
-            { color: Colors[colorScheme].skyBlue }
+            { color: Colors[colorScheme].tint }
           ]}>x{quantity}</ThemedText>
         </View>
       </View>
