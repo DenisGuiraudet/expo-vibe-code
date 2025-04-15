@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -6,6 +6,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 
 export default function TabTwoScreen() {
   return (
@@ -19,9 +20,12 @@ export default function TabTwoScreen() {
           style={styles.headerImage}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
+      <View style={styles.headerRow}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Explore</ThemedText>
+        </ThemedView>
+        <ThemeToggleButton size={40} />
+      </View>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
@@ -101,6 +105,12 @@ const styles = StyleSheet.create({
     bottom: -90,
     left: -35,
     position: 'absolute',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   titleContainer: {
     flexDirection: 'row',

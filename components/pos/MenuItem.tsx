@@ -22,22 +22,47 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
   const isMediumScreen = screenWidth >= 600 && screenWidth < 900; // Small tablet
   const isLargeScreen = screenWidth >= 1200; // Large desktop
   
-  // Get gradient colors based on category
+  // Get gradient colors based on category and theme
   const getCategoryGradient = (category: string) => {
+    // Base opacity adjustments for dark mode
+    const opacityAdjust = colorScheme === 'dark' ? 0.2 : 0.4;
+    const opacityAdjustLow = colorScheme === 'dark' ? 0.05 : 0.1;
+    
     switch(category) {
       case 'Appetizers':
-        return ['rgba(255, 128, 171, 0.4)', 'rgba(255, 128, 171, 0.1)']; // Pink gradient
+        return [
+          `rgba(255, 128, 171, ${opacityAdjust})`, 
+          `rgba(255, 128, 171, ${opacityAdjustLow})`
+        ]; // Pink gradient
       case 'Main Courses':
-        return ['rgba(129, 212, 250, 0.4)', 'rgba(129, 212, 250, 0.1)']; // Sky blue gradient
+        return [
+          `rgba(129, 212, 250, ${opacityAdjust})`, 
+          `rgba(129, 212, 250, ${opacityAdjustLow})`
+        ]; // Sky blue gradient
       case 'Desserts':
-        return ['rgba(255, 128, 171, 0.5)', 'rgba(255, 128, 171, 0.2)']; // Darker pink gradient
+        return [
+          `rgba(255, 128, 171, ${opacityAdjust + 0.1})`, 
+          `rgba(255, 128, 171, ${opacityAdjustLow + 0.1})`
+        ]; // Darker pink gradient
       case 'Beverages':
-        return ['rgba(129, 212, 250, 0.5)', 'rgba(129, 212, 250, 0.2)']; // Darker sky blue gradient
+        return [
+          `rgba(129, 212, 250, ${opacityAdjust + 0.1})`, 
+          `rgba(129, 212, 250, ${opacityAdjustLow + 0.1})`
+        ]; // Darker sky blue gradient
       case 'Specials':
-        return ['rgba(243, 229, 245, 0.6)', 'rgba(243, 229, 245, 0.3)']; // Purple gradient
+        return colorScheme === 'dark' 
+          ? ['rgba(180, 160, 200, 0.3)', 'rgba(180, 160, 200, 0.1)']  // Dark purple for dark mode
+          : ['rgba(243, 229, 245, 0.6)', 'rgba(243, 229, 245, 0.3)']; // Light purple for light mode
       default:
-        return ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.3)']; // White gradient
+        return colorScheme === 'dark'
+          ? ['rgba(70, 70, 70, 0.7)', 'rgba(50, 50, 50, 0.3)']       // Dark gray for dark mode
+          : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.3)']; // White for light mode
     }
+  };
+  
+  // Determine text color based on theme
+  const getTextColor = () => {
+    return colorScheme === 'dark' ? '#E0E0E0' : '#333';
   };
   
   return (
@@ -48,7 +73,14 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
       isLargeScreen && styles.menuItemContainerLarge
     ]}>
       <TouchableOpacity
-        style={styles.menuItemButton}
+        style={[
+          styles.menuItemButton,
+          { 
+            borderColor: colorScheme === 'dark' 
+              ? 'rgba(70, 70, 70, 0.7)' 
+              : 'rgba(255, 255, 255, 0.7)'
+          }
+        ]}
         onPress={onAdd}
       >
         <LinearGradient
@@ -57,9 +89,12 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
           end={{ x: 1, y: 1 }}
           style={styles.menuItemGradient}
         >
-          <ThemedText style={styles.itemText}>{name}</ThemedText>
+          <ThemedText style={[styles.itemText, { color: getTextColor() }]}>{name}</ThemedText>
           {quantity > 0 && (
-            <View style={styles.catalogQuantityBadge}>
+            <View style={[
+              styles.catalogQuantityBadge,
+              { backgroundColor: Colors[colorScheme].skyBlue }
+            ]}>
               <Text style={styles.catalogQuantityText}>{quantity}</Text>
             </View>
           )}
@@ -67,7 +102,14 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
       </TouchableOpacity>
       {quantity > 0 && (
         <TouchableOpacity
-          style={styles.minusButton}
+          style={[
+            styles.minusButton,
+            { 
+              borderColor: colorScheme === 'dark' 
+                ? 'rgba(70, 70, 70, 0.7)' 
+                : 'rgba(255, 255, 255, 0.7)'
+            }
+          ]}
           onPress={onRemove}
         >
           <LinearGradient
@@ -123,7 +165,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
     backdropFilter: 'blur(10px)', // This only works on iOS
   },
   menuItemGradient: {
@@ -137,7 +178,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 14,
-    color: '#333', // Darker text for better contrast
   },
   minusButton: {
     position: 'absolute',
@@ -155,7 +195,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   minusButtonGradient: {
     width: '100%',
@@ -175,7 +214,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -6,
     left: -6,
-    backgroundColor: Colors.light.skyBlue, // Using our theme sky blue color
     minWidth: 24,
     height: 24,
     borderRadius: 12,

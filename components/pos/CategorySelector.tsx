@@ -24,21 +24,68 @@ export function CategorySelector({
   const screenWidth = Dimensions.get('window').width;
   const isSmallScreen = screenWidth < 768; // Consider tablets at 768px+
 
-  // Define gradient colors based on category
+  // Define gradient colors based on category and theme
   const getCategoryGradient = (category: string) => {
     if (category.includes('Desserts') || category.includes('Appetizers') || category.includes('Specials')) {
-      return ['rgba(255, 128, 171, 0.9)', 'rgba(255, 128, 171, 0.6)']; // Pink gradient
+      return [
+        'rgba(255, 128, 171, 0.9)', 
+        'rgba(255, 128, 171, 0.6)'
+      ]; // Pink gradient
     } else {
-      return ['rgba(129, 212, 250, 0.9)', 'rgba(129, 212, 250, 0.6)']; // Sky blue gradient
+      return [
+        'rgba(129, 212, 250, 0.9)', 
+        'rgba(129, 212, 250, 0.6)'
+      ]; // Sky blue gradient
     }
+  };
+  
+  // Get button border color based on theme and selection state
+  const getButtonBorderColor = (isSelected: boolean) => {
+    if (colorScheme === 'dark') {
+      return isSelected 
+        ? 'rgba(100, 100, 100, 0.8)'
+        : 'rgba(70, 70, 70, 0.5)';
+    } else {
+      return isSelected 
+        ? 'rgba(255, 255, 255, 0.8)'
+        : 'rgba(255, 255, 255, 0.5)';
+    }
+  };
+  
+  // Get container background color based on theme
+  const getContainerBackground = () => {
+    return colorScheme === 'dark'
+      ? 'rgba(30, 30, 30, 0.3)'
+      : 'rgba(255, 255, 255, 0.3)';
+  };
+  
+  // Get container border color based on theme
+  const getContainerBorderColor = () => {
+    return colorScheme === 'dark'
+      ? 'rgba(70, 70, 70, 0.8)'
+      : 'rgba(255, 255, 255, 0.8)';
+  };
+  
+  // Get text color for unselected categories based on theme
+  const getUnselectedTextColor = () => {
+    return colorScheme === 'dark' ? '#E0E0E0' : '#333';
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container, 
+      { 
+        backgroundColor: getContainerBackground(),
+        borderBottomColor: getContainerBorderColor() 
+      }
+    ]}>
       {isCollapsed ? (
         <View style={styles.collapsedView}>
           <TouchableOpacity
-            style={styles.selectedButton}
+            style={[
+              styles.selectedButton,
+              { borderColor: getButtonBorderColor(true) }
+            ]}
             onPress={() => setIsCollapsed(false)}
           >
             <LinearGradient
@@ -67,11 +114,7 @@ export function CategorySelector({
               style={[
                 styles.categoryButton,
                 isSmallScreen && styles.categoryButtonMobile,
-                {
-                  borderColor: selectedCategory === category
-                    ? 'rgba(255, 255, 255, 0.8)'
-                    : 'rgba(255, 255, 255, 0.5)'
-                }
+                { borderColor: getButtonBorderColor(selectedCategory === category) }
               ]}
               onPress={() => {
                 onSelectCategory(category);
@@ -93,8 +136,18 @@ export function CategorySelector({
                   </ThemedText>
                 </LinearGradient>
               ) : (
-                <View style={styles.categoryButtonInner}>
-                  <ThemedText style={[styles.categoryText, { color: '#333' }]}>
+                <View style={[
+                  styles.categoryButtonInner,
+                  { 
+                    backgroundColor: colorScheme === 'dark' 
+                      ? 'rgba(50, 50, 50, 0.3)' 
+                      : 'rgba(255, 255, 255, 0.3)' 
+                  }
+                ]}>
+                  <ThemedText style={[
+                    styles.categoryText, 
+                    { color: getUnselectedTextColor() }
+                  ]}>
                     {category}
                   </ThemedText>
                 </View>
@@ -105,7 +158,15 @@ export function CategorySelector({
           {/* Collapse button for tablet+ */}
           {!isSmallScreen && selectedCategory && (
             <TouchableOpacity
-              style={styles.collapseButton}
+              style={[
+                styles.collapseButton,
+                { 
+                  backgroundColor: colorScheme === 'dark' 
+                    ? 'rgba(50, 50, 50, 0.5)' 
+                    : 'rgba(255, 255, 255, 0.5)',
+                  borderColor: getButtonBorderColor(false)
+                }
+              ]}
               onPress={() => setIsCollapsed(true)}
             >
               <Ionicons name="chevron-up" size={20} color={Colors[colorScheme].pink} />
@@ -120,9 +181,7 @@ export function CategorySelector({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Very light glass effect
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   categoryContainer: {
     paddingVertical: 12,
@@ -175,7 +234,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   collapseButton: {
     paddingHorizontal: 14,
@@ -183,8 +241,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 12, // More rounded for glassmorphic look
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -209,5 +265,6 @@ const styles = StyleSheet.create({
   categoryButtonInner: {
     paddingHorizontal: 20,
     paddingVertical: 16,
+    borderRadius: 12,
   },
 });

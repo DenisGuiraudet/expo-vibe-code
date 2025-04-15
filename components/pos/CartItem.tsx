@@ -15,16 +15,41 @@ interface CartItemProps {
 export function CartItem({ name, quantity, onRemove }: CartItemProps) {
   const colorScheme = useColorScheme() ?? 'light';
   
+  // Get gradient colors based on theme
+  const getGradientColors = () => {
+    return colorScheme === 'dark'
+      ? ['rgba(50, 50, 50, 0.7)', 'rgba(40, 40, 40, 0.4)']
+      : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.4)'];
+  };
+
+  // Get border color based on theme
+  const getBorderColor = () => {
+    return colorScheme === 'dark'
+      ? 'rgba(70, 70, 70, 0.8)'
+      : 'rgba(255, 255, 255, 0.7)';
+  };
+  
   return (
     <LinearGradient
-      colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.4)']}
-      style={styles.orderItemGradient}
+      colors={getGradientColors()}
+      style={[
+        styles.orderItemGradient,
+        { 
+          borderBottomColor: colorScheme === 'dark' 
+            ? 'rgba(129, 212, 250, 0.15)' 
+            : 'rgba(129, 212, 250, 0.3)',
+          borderColor: getBorderColor()
+        }
+      ]}
     >
       <View style={styles.orderItemRow}>
         <ThemedText style={styles.itemName}>{name}</ThemedText>
         <View style={styles.orderItemControls}>
           <TouchableOpacity
-            style={styles.orderMinusButton}
+            style={[
+              styles.orderMinusButton,
+              { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.7)' }
+            ]}
             onPress={onRemove}
           >
             <LinearGradient
@@ -34,7 +59,10 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
               <Text style={styles.minusButtonText}>-</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <ThemedText style={styles.quantityText}>x{quantity}</ThemedText>
+          <ThemedText style={[
+            styles.quantityText, 
+            { color: Colors[colorScheme].skyBlue }
+          ]}>x{quantity}</ThemedText>
         </View>
       </View>
     </LinearGradient>
@@ -42,29 +70,12 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
 }
 
 const styles = StyleSheet.create({
-  orderItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
-    marginBottom: 8,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
-  },
   orderItemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   itemName: {
-    color: '#333',
     fontWeight: '500',
   },
   orderItemControls: {
@@ -72,7 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   orderMinusButton: {
-    backgroundColor: Colors.light.pink, // Pink button
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -85,7 +95,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   minusButtonText: {
     color: 'white',
@@ -97,23 +106,19 @@ const styles = StyleSheet.create({
   quantityText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: Colors.light.skyBlue, // Sky blue text
   },
   orderItemGradient: {
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
     marginBottom: 8,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   minusButtonGradient: {
     width: 24,

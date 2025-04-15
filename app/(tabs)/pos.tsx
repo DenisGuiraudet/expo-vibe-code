@@ -12,6 +12,7 @@ import { CartItem } from '@/components/pos/CartItem';
 import { CategorySelector } from '@/components/pos/CategorySelector';
 import { Category, OrderItem } from '@/types/pos';
 import { categories, menuItems, getCategoryIcon } from '@/constants/pos/menuData';
+import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 
 export default function POSScreen() {
   const [selectedCategory, setSelectedCategory] = React.useState<Category>('Appetizers');
@@ -55,7 +56,14 @@ export default function POSScreen() {
         return updatedItems;
       } else {
         // Item doesn't exist, add it with quantity 1
-        return [...currentItems, { name: item, quantity: 1 }];
+        return [...currentItems, { 
+          name: item, 
+          quantity: 1,
+          price: 10,
+          category: selectedCategory,
+          id: Date.now().toString(),
+          timestamp: Date.now()
+        }];
       }
     });
   };
@@ -113,10 +121,19 @@ export default function POSScreen() {
     setShowCart(!showCart);
   };
 
+  // Get gradient colors based on theme
+  const getGradientColors = () => {
+    return colorScheme === 'dark' 
+      ? ['rgba(30, 30, 30, 1)', 'rgba(255, 128, 171, 0.05)', 'rgba(129, 212, 250, 0.05)'] 
+      : ['rgba(245, 245, 245, 1)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)'];
+  };
+
+  const currentDate = "April 15, 2025";
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
-        colors={['rgba(245, 245, 245, 1)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)']}
+        colors={getGradientColors()}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradientBackground}
@@ -135,17 +152,19 @@ export default function POSScreen() {
               </View>
               
               <View style={styles.headerRight}>
-                <ThemedText style={styles.dateText}>April 14, 2025</ThemedText>
+                <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
+                
+                <ThemeToggleButton size={40} />
                 
                 {/* Cart button for mobile */}
                 {isSmallScreen && (
                   <TouchableOpacity 
-                    style={styles.cartButton} 
+                    style={[styles.cartButton, { backgroundColor: colorScheme === 'dark' ? 'rgba(50, 50, 50, 0.8)' : 'rgba(255, 255, 255, 0.8)' }]} 
                     onPress={toggleCart}
                   >
                     <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
                     {totalItems > 0 && (
-                      <View style={styles.cartBadge}>
+                      <View style={[styles.cartBadge, { backgroundColor: Colors[colorScheme].pink }]}>
                         <ThemedText style={styles.cartBadgeText}>{totalItems}</ThemedText>
                       </View>
                     )}
@@ -170,6 +189,8 @@ export default function POSScreen() {
             {/* Menu Items */}
             <View style={[
               styles.menuItemsContainer,
+              { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
+              { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
               isSmallScreen && styles.menuItemsContainerMobile
             ]}>
               <View style={styles.categoryHeader}>
@@ -202,13 +223,24 @@ export default function POSScreen() {
             
             {/* Order List - only visible on tablet+ by default */}
             {!isSmallScreen && (
-              <View style={styles.orderContainer}>
-                <ThemedView style={styles.orderHeader}>
+              <View style={[
+                styles.orderContainer, 
+                { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
+                { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
+                { borderLeftColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+              ]}>
+                <ThemedView style={[
+                  styles.orderHeader,
+                  { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+                ]}>
                   <View style={styles.orderHeaderTitle}>
                     <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
                     <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
                   </View>
-                  <TouchableOpacity onPress={clearOrder} style={styles.clearButton}>
+                  <TouchableOpacity onPress={clearOrder} style={[
+                    styles.clearButton,
+                    { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
+                  ]}>
                     <Ionicons name="trash" size={18} color="white" />
                     <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
                   </TouchableOpacity>
@@ -230,12 +262,19 @@ export default function POSScreen() {
                 </ScrollView>
                 
                 {orderItems.length > 0 && (
-                  <ThemedView style={styles.orderSummary}>
+                  <ThemedView style={[
+                    styles.orderSummary,
+                    { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
+                    { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+                  ]}>
                     <View style={styles.subtotalRow}>
                       <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
                       <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
                     </View>
-                    <TouchableOpacity style={styles.checkoutButton}>
+                    <TouchableOpacity style={[
+                      styles.checkoutButton,
+                      { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
+                    ]}>
                       <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
                       <ThemedText style={styles.checkoutText}>
                         Checkout ({totalItems} items)
@@ -249,15 +288,33 @@ export default function POSScreen() {
           
           {/* Mobile Cart View - only visible when showCart is true */}
           {isSmallScreen && showCart && (
-            <View style={styles.mobileCartContainer}>
-              <ThemedView style={styles.orderHeader}>
+            <View style={[
+              styles.mobileCartContainer,
+              { backgroundColor: colorScheme === 'dark' ? Colors.dark.background : Colors.light.whiteSmoke }
+            ]}>
+              <ThemedView style={[
+                styles.orderHeader,
+                { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+              ]}>
                 <View style={styles.orderHeaderTitle}>
-                  <TouchableOpacity onPress={toggleCart} style={styles.backButton}>
+                  <TouchableOpacity 
+                    onPress={toggleCart} 
+                    style={[
+                      styles.backButton,
+                      { backgroundColor: colorScheme === 'dark' ? 'rgba(60, 60, 60, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
+                    ]}
+                  >
                     <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].tint} />
                   </TouchableOpacity>
-                  <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
+                  <ThemedText type="subtitle">Current Order</ThemedText>
                 </View>
-                <TouchableOpacity onPress={clearOrder} style={styles.clearButton}>
+                <TouchableOpacity 
+                  onPress={clearOrder} 
+                  style={[
+                    styles.clearButton,
+                    { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
+                  ]}
+                >
                   <Ionicons name="trash" size={18} color="white" />
                   <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
                 </TouchableOpacity>
@@ -279,12 +336,19 @@ export default function POSScreen() {
               </ScrollView>
               
               {orderItems.length > 0 && (
-                <ThemedView style={styles.orderSummary}>
+                <ThemedView style={[
+                  styles.orderSummary,
+                  { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
+                  { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+                ]}>
                   <View style={styles.subtotalRow}>
                     <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
                     <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
                   </View>
-                  <TouchableOpacity style={styles.checkoutButton}>
+                  <TouchableOpacity style={[
+                    styles.checkoutButton,
+                    { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
+                  ]}>
                     <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
                     <ThemedText style={styles.checkoutText}>
                       Checkout ({totalItems} items)
@@ -307,13 +371,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 0,
-    backgroundColor: Colors.light.whiteSmoke, // Using our new white background
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 128, 171, 0.3)', // Soft pink border
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Glassmorphic effect
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -341,18 +403,15 @@ const styles = StyleSheet.create({
   },
   smallTitle: {
     fontSize: 18,
-    color: Colors.light.pink, // Pink text for title
     fontWeight: 'bold',
   },
   dateText: {
     fontSize: 16,
-    color: Colors.light.skyBlue, // Sky blue for date
     fontWeight: '500',
   },
   cartButton: {
     position: 'relative',
     padding: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Glassmorphic button
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -364,7 +423,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
-    backgroundColor: Colors.light.pink, // Pink badge
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -398,7 +456,6 @@ const styles = StyleSheet.create({
   menuItemsContainer: {
     flex: 2,
     marginRight: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
@@ -407,7 +464,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   menuItemsContainerMobile: {
     flex: 1,
@@ -432,10 +488,8 @@ const styles = StyleSheet.create({
   orderContainer: {
     flex: 1,
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
     paddingLeft: 16,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
@@ -443,7 +497,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   mobileCartContainer: {
     position: 'absolute',
@@ -451,7 +504,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Colors.light.whiteSmoke,
     zIndex: 10,
     padding: 16,
     paddingTop: 0,
@@ -463,7 +515,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
   },
   orderHeaderTitle: {
     flexDirection: 'row',
@@ -472,7 +523,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Glass effect
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -482,7 +532,6 @@ const styles = StyleSheet.create({
   },
   orderTitle: {
     marginLeft: 4,
-    color: Colors.light.pink, // Pink title
     fontWeight: 'bold',
   },
   clearButton: {
@@ -494,7 +543,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)', // Glass border
   },
   clearButtonText: {
     color: 'white',
@@ -508,14 +556,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
     opacity: 0.6,
-    color: Colors.light.skyBlue, // Sky blue text
   },
   orderSummary: {
     marginTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
     paddingTop: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -531,12 +576,10 @@ const styles = StyleSheet.create({
   },
   subtotalText: {
     fontWeight: '600',
-    color: Colors.light.skyBlue, // Sky blue text
   },
   subtotalAmount: {
     fontWeight: '700',
     fontSize: 18,
-    color: Colors.light.pink, // Pink amount
   },
   checkoutButton: {
     backgroundColor: 'rgba(129, 212, 250, 0.8)', // Semi-transparent sky blue
@@ -552,7 +595,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   checkoutText: {
     color: 'white',
@@ -568,7 +610,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.light.skyBlue, // Sky blue FAB
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -578,13 +619,11 @@ const styles = StyleSheet.create({
     elevation: 6,
     zIndex: 5,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   fabBadge: {
     position: 'absolute',
     top: 0,
     right: 0,
-    backgroundColor: Colors.light.pink, // Pink badge
     borderRadius: 12,
     minWidth: 24,
     height: 24,
