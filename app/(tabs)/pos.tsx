@@ -143,11 +143,14 @@ export default function POSScreen() {
         >
           <View style={styles.headerContent}>
             <View style={styles.logoContainer}>
-              <Image 
-                source={require('@/assets/images/react-logo.png')} 
-                style={styles.logo} 
-                resizeMode="contain"
-              />
+              {/* Replace React logo with restaurant icon */}
+              <View style={styles.restaurantLogoContainer}>
+                <Ionicons 
+                  name="restaurant" 
+                  size={32} 
+                  color={Colors[colorScheme].tint} 
+                />
+              </View>
               <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
             </View>
             
@@ -403,9 +406,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  logo: {
-    width: 40,
-    height: 40,
+  restaurantLogoContainer: {
     marginRight: 10,
   },
   smallTitle: {

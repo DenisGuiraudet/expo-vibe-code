@@ -34,11 +34,18 @@ export function SnowTextureBackground({ intensity = 'medium' }: SnowTextureBackg
     }
   };
   
+  // Get the appropriate texture based on theme
+  const getTextureSource = () => {
+    return colorScheme === 'dark'
+      ? require('@/assets/images/textures/wood.png')
+      : require('@/assets/images/textures/snow.png');
+  };
+  
   return (
     <View style={[styles.container, { width, height }]}>
       <View style={[styles.baseBackground, { backgroundColor: getBaseColor() }]} />
       <ImageBackground 
-        source={require('@/assets/images/textures/snow.png')} 
+        source={getTextureSource()} 
         style={styles.backgroundImage}
         resizeMode="repeat"
       >
