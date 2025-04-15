@@ -5,11 +5,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { useThemeContext } from '@/contexts/ThemeContext';
-import { SnowBackground } from '@/components/ui/SnowBackground';
 
 // Custom hook to wrap our new ThemeContext
 function CustomThemeNavigationProvider({ children }: { children: React.ReactNode }) {
@@ -17,9 +16,11 @@ function CustomThemeNavigationProvider({ children }: { children: React.ReactNode
   
   return (
     <NavigationThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1 }}>
-        <SnowBackground intensity="high" />
-        {children}
+      <View style={styles.container}>
+        {/* Top layer - app content */}
+        <View style={styles.contentContainer}>
+          {children}
+        </View>
       </View>
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
     </NavigationThemeProvider>
@@ -55,3 +56,14 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
+  contentContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+});

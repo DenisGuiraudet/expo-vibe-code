@@ -105,11 +105,26 @@ const Snowflake = ({
 
   // Determine snowflake color based on theme - make it more visible
   const snowColor = colorScheme === 'dark'
-    ? 'rgba(255, 255, 255, 0.65)'  // Brighter white in dark mode
-    : 'rgba(200, 200, 255, 0.75)'; // Brighter blue tint in light mode
+    ? 'rgba(255, 255, 255, 0.8)'  // Brighter white in dark mode
+    : 'rgba(255, 255, 255, 0.9)'; // Pure white in light mode
+
+  // Add a subtle shadow to make it pop against the texture
+  const shadowProps = colorScheme === 'dark'
+    ? { shadowColor: '#fff', shadowOpacity: 0.3 }
+    : { shadowColor: '#000', shadowOpacity: 0.1 };
 
   return (
-    <Animated.View style={[styles.snowflakeContainer, animatedStyle]}>
+    <Animated.View 
+      style={[
+        styles.snowflakeContainer, 
+        animatedStyle,
+        {
+          shadowOffset: { width: 0, height: 0 },
+          shadowRadius: size / 3,
+          ...shadowProps
+        }
+      ]}
+    >
       <Svg height={size} width={size} viewBox={`0 0 ${size} ${size}`}>
         <Circle
           cx={size / 2}
@@ -135,8 +150,8 @@ export function SnowBackground({ intensity = 'medium' }: SnowBackgroundProps) {
   const getFlakeCount = () => {
     switch (intensity) {
       case 'low': return Math.floor(width / 40); // Fewer snowflakes
-      case 'high': return Math.floor(width / 12); // Many snowflakes
-      default: return Math.floor(width / 25); // Medium density
+      case 'high': return Math.floor(width / 10); // More snowflakes
+      default: return Math.floor(width / 20); // Medium density
     }
   };
 
@@ -146,10 +161,14 @@ export function SnowBackground({ intensity = 'medium' }: SnowBackgroundProps) {
     const newSnowflakes: React.ReactNode[] = [];
 
     for (let i = 0; i < flakeCount; i++) {
-      const size = Math.random() * 6 + 3; // Increased size between 3 and 9
+      // Create a mix of sizes with bias toward smaller flakes
+      const size = Math.random() < 0.7 
+        ? Math.random() * 5 + 3  // 70% smaller flakes (3-8px)
+        : Math.random() * 7 + 6; // 30% larger flakes (6-13px)
+        
       const x = Math.random() * width;
       const y = Math.random() * -height; // Start above screen
-      const opacity = Math.random() * 0.5 + 0.4; // Higher base opacity
+      const opacity = Math.random() * 0.4 + 0.6; // Higher base opacity (0.6-1.0)
       const delay = Math.random() * 5000; // Random delay for staggered animation
       const duration = Math.random() * 15000 + 10000; // Random duration between 10-25s
       
@@ -195,10 +214,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 1, // Changed from -1 to 1 to make it visible above the background but below content
+    zIndex: 2, // Above the texture (1) but below UI elements (10+)
     overflow: 'hidden',
+    pointerEvents: 'none', // Ensure snow doesn't interfere with touches
   },
   snowflakeContainer: {
     position: 'absolute',
+    pointerEvents: 'none',
   },
 });

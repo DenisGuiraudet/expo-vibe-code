@@ -124,8 +124,8 @@ export default function POSScreen() {
   // Get gradient colors based on theme
   const getGradientColors = () => {
     return colorScheme === 'dark' 
-      ? ['rgba(30, 30, 30, 0.7)', 'rgba(255, 128, 171, 0.05)', 'rgba(129, 212, 250, 0.05)'] 
-      : ['rgba(245, 245, 245, 0.7)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)'];
+      ? ['rgba(30, 30, 30, 1)', 'rgba(255, 128, 171, 0.05)', 'rgba(129, 212, 250, 0.05)'] 
+      : ['rgba(245, 245, 245, 1)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)'];
   };
 
   const currentDate = "April 15, 2025";
