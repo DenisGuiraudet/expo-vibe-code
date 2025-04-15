@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
@@ -34,12 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Image 
-              source={colorScheme === 'dark' 
-                ? require('@/assets/images/logo-dark.png') 
-                : require('@/assets/images/logo.png')} 
-              style={{ width: size, height: size, tintColor: color }}
-            />
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
@@ -48,12 +44,7 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, size }) => (
-            <Image 
-              source={colorScheme === 'dark' 
-                ? require('@/assets/images/logo-dark.png') 
-                : require('@/assets/images/logo.png')} 
-              style={{ width: size, height: size, tintColor: color }}
-            />
+            <Ionicons name="compass" size={size} color={color} />
           ),
         }}
       />
@@ -62,12 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'POS',
           tabBarIcon: ({ color, size }) => (
-            <Image 
-              source={colorScheme === 'dark' 
-                ? require('@/assets/images/logo-dark.png') 
-                : require('@/assets/images/logo.png')} 
-              style={{ width: size, height: size, tintColor: color }}
-            />
+            <Ionicons name="restaurant" size={size} color={color} />
           ),
         }}
       />

@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, Text, Dimensions, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -16,9 +16,21 @@ interface MenuItemProps {
 export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItemProps) {
   const colorScheme = useColorScheme() ?? 'light';
   
+  // Use state for dimensions to handle orientation changes
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  
+  // Update dimensions on screen size changes (e.g., rotation)
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setDimensions(window);
+    });
+    return () => subscription.remove();
+  }, []);
+  
   // Get screen width to adjust item size
-  const screenWidth = Dimensions.get('window').width;
+  const screenWidth = dimensions.width;
   const isSmallScreen = screenWidth < 600; // Phone
+  const isAndroid = Platform.OS === 'android';
   const isMediumScreen = screenWidth >= 600 && screenWidth < 900; // Small tablet
   const isLargeScreen = screenWidth >= 1200; // Large desktop
   
@@ -92,6 +104,7 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
     <View style={[
       styles.menuItemContainer,
       isSmallScreen && styles.menuItemContainerSmall,
+      isSmallScreen && isAndroid && styles.menuItemContainerAndroid,
       isMediumScreen && styles.menuItemContainerMedium,
       isLargeScreen && styles.menuItemContainerLarge
     ]}>
@@ -161,6 +174,13 @@ const styles = StyleSheet.create({
     minHeight: 80,
     maxWidth: 'none',
   },
+  menuItemContainerAndroid: {
+    aspectRatio: 1, // Ensure square shape on Android
+    height: undefined, // Let height be determined by width and aspectRatio
+    minHeight: 0, // Reset minHeight for Android to respect aspectRatio
+    margin: '1%',
+    width: '48%', // Make sure width is correctly set for Android
+  },
   menuItemContainerMedium: {
     width: '31.33%', // Three items per row
     margin: '1%',
@@ -181,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    minHeight: 80,
+    minHeight: Platform.OS === 'android' ? 0 : 80, // Zero for Android to respect parent's aspectRatio
     aspectRatio: 1, // Make buttons square
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

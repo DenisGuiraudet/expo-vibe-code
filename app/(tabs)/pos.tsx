@@ -183,7 +183,9 @@ export default function POSScreen() {
                   style={styles.logoImage} 
                 />
               </View>
-              <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
+              {!isSmallScreen && (
+                <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
+              )}
             </View>
             
             <View style={styles.headerRight}>
@@ -210,12 +212,14 @@ export default function POSScreen() {
         </LinearGradient>
         
         {/* Category Selection */}
-        <CategorySelector 
-          categories={categories} 
-          selectedCategory={selectedCategory}
-          onSelectCategory={(category) => setSelectedCategory(category as Category)}
-          categoryItemCounts={getCategoryCounts()}
-        />
+        {!(isSmallScreen && showCart) && (
+          <CategorySelector 
+            categories={categories} 
+            selectedCategory={selectedCategory}
+            onSelectCategory={(category) => setSelectedCategory(category as Category)}
+            categoryItemCounts={getCategoryCounts()}
+          />
+        )}
         
         {/* Main Content */}
         <View style={[
@@ -319,9 +323,12 @@ export default function POSScreen() {
           )}
         </View>
         
-        {/* Mobile Cart View - only visible when showCart is true - removed background */}
+        {/* Mobile Cart View - only visible when showCart is true */}
         {isSmallScreen && showCart && (
-          <View style={styles.mobileCartContainer}>
+          <View style={[
+            styles.mobileCartContainer,
+            { backgroundColor: colorScheme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(245, 245, 245, 0.95)' }
+          ]}>
             <ThemedView style={[
               styles.orderHeader,
               { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
@@ -530,6 +537,8 @@ const styles = StyleSheet.create({
   },
   itemsGridMobile: {
     justifyContent: 'space-between',
+    width: '100%',
+    alignSelf: 'center',
   },
   itemsGridLarge: {
     justifyContent: 'flex-start',
@@ -557,7 +566,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: 16,
     paddingTop: 0,
-    backgroundColor: 'transparent', // Explicitly set to transparent
+    borderRadius: 16,
+    marginTop: 8,
   },
   orderHeader: {
     flexDirection: 'row',
