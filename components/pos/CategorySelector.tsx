@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, View, Dimensions } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, ScrollView, TouchableOpacity, View, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
@@ -21,6 +21,10 @@ export function CategorySelector({
 }: CategorySelectorProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [scrollPosition, setScrollPosition] = useState(0);
   
   // Get screen width to adjust button size
   const screenWidth = Dimensions.get('window').width;
@@ -84,6 +88,35 @@ export function CategorySelector({
     };
   };
 
+  // Scroll functions with fixed scroll distance
+  const scrollLeft = () => {
+    if (scrollViewRef.current) {
+      const newPosition = Math.max(0, scrollPosition - 300);
+      scrollViewRef.current.scrollTo({ x: newPosition, animated: true });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollViewRef.current) {
+      const newPosition = scrollPosition + 300;
+      scrollViewRef.current.scrollTo({ x: newPosition, animated: true });
+    }
+  };
+
+  // Check if we can scroll left/right
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const contentWidth = event.nativeEvent.contentSize.width;
+    const containerWidth = event.nativeEvent.layoutMeasurement.width;
+    
+    // Update current scroll position
+    setScrollPosition(offsetX);
+    
+    // Update scroll button states
+    setCanScrollLeft(offsetX > 10);
+    setCanScrollRight(offsetX < contentWidth - containerWidth - 10);
+  };
+
   return (
     <View style={[
       styles.container, 
@@ -116,91 +149,144 @@ export function CategorySelector({
           </TouchableOpacity>
         </View>
       ) : (
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.categoryContainer}
-          contentContainerStyle={styles.categoryContent}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryButton,
-                getShadowStyle(),
-                isSmallScreen && styles.categoryButtonMobile,
-                { borderColor: getButtonBorderColor(selectedCategory === category) }
-              ]}
-              onPress={() => {
-                onSelectCategory(category);
-                // Collapse after selection on mobile devices
-                if (isSmallScreen) {
-                  setIsCollapsed(true);
-                }
-              }}
-            >
-              {selectedCategory === category ? (
-                <LinearGradient
-                  colors={getCategoryGradient(category)}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.categoryButtonGradient}
-                >
-                  <View style={styles.categoryTextContainer}>
-                    <ThemedText style={[styles.categoryText, { color: 'white' }]}>
-                      {category}
-                    </ThemedText>
-                    {categoryItemCounts[category] > 0 && (
-                      <View style={[styles.countBadge, styles.selectedCountBadge]}>
-                        <ThemedText style={styles.countBadgeText}>{categoryItemCounts[category]}</ThemedText>
-                      </View>
-                    )}
-                  </View>
-                </LinearGradient>
-              ) : (
-                <View style={[
-                  styles.categoryButtonInner,
-                  { 
-                    backgroundColor: getUnselectedButtonBackground()
-                  }
-                ]}>
-                  <View style={styles.categoryTextContainer}>
-                    <ThemedText style={[
-                      styles.categoryText, 
-                      { color: getUnselectedTextColor() }
-                    ]}>
-                      {category}
-                    </ThemedText>
-                    {categoryItemCounts[category] > 0 && (
-                      <View style={[styles.countBadge, { backgroundColor: colorScheme === 'dark' ? 'rgba(80, 80, 80, 0.9)' : 'rgba(200, 200, 200, 0.9)' }]}>
-                        <ThemedText style={[styles.countBadgeText, { color: getUnselectedTextColor() }]}>{categoryItemCounts[category]}</ThemedText>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
-          
-          {/* Collapse button for tablet+ */}
-          {!isSmallScreen && selectedCategory && (
+        <View style={styles.scrollContainer}>
+          {!isSmallScreen && (
             <TouchableOpacity
               style={[
-                styles.collapseButton,
+                styles.scrollButton,
                 getShadowStyle(),
                 { 
                   backgroundColor: colorScheme === 'dark' 
-                    ? 'rgba(50, 50, 50, 0.5)' 
-                    : 'rgba(230, 230, 230, 0.6)',
-                  borderColor: getButtonBorderColor(false)
+                    ? 'rgba(50, 50, 50, 0.7)' 
+                    : 'rgba(230, 230, 230, 0.8)',
+                  borderColor: getButtonBorderColor(false),
+                  opacity: canScrollLeft ? 1 : 0.3
                 }
               ]}
-              onPress={() => setIsCollapsed(true)}
+              onPress={scrollLeft}
+              disabled={!canScrollLeft}
             >
-              <Ionicons name="chevron-up" size={20} color={Colors[colorScheme].pink} />
+              <Ionicons 
+                name="chevron-back" 
+                size={20} 
+                color={Colors[colorScheme].tint} 
+              />
             </TouchableOpacity>
           )}
-        </ScrollView>
+          
+          <ScrollView 
+            ref={scrollViewRef}
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.categoryContainer}
+            contentContainerStyle={styles.categoryContent}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+          >
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category}
+                style={[
+                  styles.categoryButton,
+                  getShadowStyle(),
+                  isSmallScreen && styles.categoryButtonMobile,
+                  { borderColor: getButtonBorderColor(selectedCategory === category) }
+                ]}
+                onPress={() => {
+                  onSelectCategory(category);
+                  // Collapse after selection on mobile devices
+                  if (isSmallScreen) {
+                    setIsCollapsed(true);
+                  }
+                }}
+              >
+                {selectedCategory === category ? (
+                  <LinearGradient
+                    colors={getCategoryGradient(category)}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.categoryButtonGradient}
+                  >
+                    <View style={styles.categoryTextContainer}>
+                      <ThemedText style={[styles.categoryText, { color: 'white' }]}>
+                        {category}
+                      </ThemedText>
+                      {categoryItemCounts[category] > 0 && (
+                        <View style={[styles.countBadge, styles.selectedCountBadge]}>
+                          <ThemedText style={styles.countBadgeText}>{categoryItemCounts[category]}</ThemedText>
+                        </View>
+                      )}
+                    </View>
+                  </LinearGradient>
+                ) : (
+                  <View style={[
+                    styles.categoryButtonInner,
+                    { 
+                      backgroundColor: getUnselectedButtonBackground()
+                    }
+                  ]}>
+                    <View style={styles.categoryTextContainer}>
+                      <ThemedText style={[
+                        styles.categoryText, 
+                        { color: getUnselectedTextColor() }
+                      ]}>
+                        {category}
+                      </ThemedText>
+                      {categoryItemCounts[category] > 0 && (
+                        <View style={[styles.countBadge, { backgroundColor: colorScheme === 'dark' ? 'rgba(80, 80, 80, 0.9)' : 'rgba(200, 200, 200, 0.9)' }]}>
+                          <ThemedText style={[styles.countBadgeText, { color: getUnselectedTextColor() }]}>{categoryItemCounts[category]}</ThemedText>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+            
+            {/* Collapse button for tablet+ */}
+            {!isSmallScreen && selectedCategory && (
+              <TouchableOpacity
+                style={[
+                  styles.collapseButton,
+                  getShadowStyle(),
+                  { 
+                    backgroundColor: colorScheme === 'dark' 
+                      ? 'rgba(50, 50, 50, 0.5)' 
+                      : 'rgba(230, 230, 230, 0.6)',
+                    borderColor: getButtonBorderColor(false)
+                  }
+                ]}
+                onPress={() => setIsCollapsed(true)}
+              >
+                <Ionicons name="chevron-up" size={20} color={Colors[colorScheme].pink} />
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+          
+          {!isSmallScreen && (
+            <TouchableOpacity
+              style={[
+                styles.scrollButton,
+                getShadowStyle(),
+                { 
+                  backgroundColor: colorScheme === 'dark' 
+                    ? 'rgba(50, 50, 50, 0.7)' 
+                    : 'rgba(230, 230, 230, 0.8)',
+                  borderColor: getButtonBorderColor(false),
+                  opacity: canScrollRight ? 1 : 0.3
+                }
+              ]}
+              onPress={scrollRight}
+              disabled={!canScrollRight}
+            >
+              <Ionicons 
+                name="chevron-forward" 
+                size={20} 
+                color={Colors[colorScheme].tint} 
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     </View>
   );
@@ -211,9 +297,25 @@ const styles = StyleSheet.create({
     width: '100%',
     borderBottomWidth: 1,
   },
+  scrollContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 8,
+    borderWidth: 1,
+    zIndex: 10,
+  },
   categoryContainer: {
     paddingVertical: 12,
     marginBottom: 8,
+    flex: 1,
   },
   categoryContent: {
     paddingHorizontal: 16,
