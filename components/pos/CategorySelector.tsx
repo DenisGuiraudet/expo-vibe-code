@@ -10,12 +10,14 @@ interface CategorySelectorProps {
   categories: string[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
+  categoryItemCounts?: Record<string, number>; // Add this new prop
 }
 
 export function CategorySelector({ 
   categories, 
   selectedCategory, 
-  onSelectCategory 
+  onSelectCategory,
+  categoryItemCounts = {} // Add default empty object
 }: CategorySelectorProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -151,9 +153,16 @@ export function CategorySelector({
                   end={{ x: 1, y: 1 }}
                   style={styles.categoryButtonGradient}
                 >
-                  <ThemedText style={[styles.categoryText, { color: 'white' }]}>
-                    {category}
-                  </ThemedText>
+                  <View style={styles.categoryTextContainer}>
+                    <ThemedText style={[styles.categoryText, { color: 'white' }]}>
+                      {category}
+                    </ThemedText>
+                    {categoryItemCounts[category] > 0 && (
+                      <View style={[styles.countBadge, styles.selectedCountBadge]}>
+                        <ThemedText style={styles.countBadgeText}>{categoryItemCounts[category]}</ThemedText>
+                      </View>
+                    )}
+                  </View>
                 </LinearGradient>
               ) : (
                 <View style={[
@@ -162,12 +171,19 @@ export function CategorySelector({
                     backgroundColor: getUnselectedButtonBackground()
                   }
                 ]}>
-                  <ThemedText style={[
-                    styles.categoryText, 
-                    { color: getUnselectedTextColor() }
-                  ]}>
-                    {category}
-                  </ThemedText>
+                  <View style={styles.categoryTextContainer}>
+                    <ThemedText style={[
+                      styles.categoryText, 
+                      { color: getUnselectedTextColor() }
+                    ]}>
+                      {category}
+                    </ThemedText>
+                    {categoryItemCounts[category] > 0 && (
+                      <View style={[styles.countBadge, { backgroundColor: colorScheme === 'dark' ? 'rgba(80, 80, 80, 0.9)' : 'rgba(200, 200, 200, 0.9)' }]}>
+                        <ThemedText style={[styles.countBadgeText, { color: getUnselectedTextColor() }]}>{categoryItemCounts[category]}</ThemedText>
+                      </View>
+                    )}
+                  </View>
                 </View>
               )}
             </TouchableOpacity>
@@ -285,5 +301,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderRadius: 12,
+  },
+  categoryCount: {
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  countBadge: {
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 8,
+    minWidth: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#333',
+    textAlign: 'center',
+  },
+  categoryTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedCountBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
 });

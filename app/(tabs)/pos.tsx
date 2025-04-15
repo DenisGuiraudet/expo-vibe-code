@@ -26,6 +26,37 @@ export default function POSScreen() {
   const [screenWidth, setScreenWidth] = React.useState(Dimensions.get('window').width);
   const isSmallScreen = screenWidth < 768; // Consider phones below 768px
 
+  // Count items by category
+  const getCategoryItemCount = (category: Category): number => {
+    return orderItems.reduce((count, item) => {
+      if (item.category === category) {
+        return count + item.quantity;
+      }
+      return count;
+    }, 0);
+  };
+
+  // Create a map of category counts for the CategorySelector
+  const getCategoryCounts = (): Record<string, number> => {
+    const counts: Record<string, number> = {};
+    
+    // Initialize all categories with zero count
+    categories.forEach(category => {
+      counts[category] = 0;
+    });
+    
+    // Count items for each category
+    orderItems.forEach(item => {
+      if (counts[item.category]) {
+        counts[item.category] += item.quantity;
+      } else {
+        counts[item.category] = item.quantity;
+      }
+    });
+    
+    return counts;
+  };
+
   // Add event listener for screen dimension changes
   React.useEffect(() => {
     const updateScreenWidth = () => {
@@ -182,6 +213,7 @@ export default function POSScreen() {
           categories={categories} 
           selectedCategory={selectedCategory}
           onSelectCategory={(category) => setSelectedCategory(category as Category)}
+          categoryItemCounts={getCategoryCounts()}
         />
         
         {/* Main Content */}
