@@ -18,9 +18,24 @@ export default function POSScreen() {
   const [showCart, setShowCart] = React.useState(false);
   const colorScheme = useColorScheme() ?? 'light';
   
-  // Get screen dimensions
-  const screenWidth = Dimensions.get('window').width;
+  // Get screen dimensions with real-time updates
+  const [screenWidth, setScreenWidth] = React.useState(Dimensions.get('window').width);
   const isSmallScreen = screenWidth < 768; // Consider phones below 768px
+
+  // Add event listener for screen dimension changes
+  React.useEffect(() => {
+    const updateScreenWidth = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
+
+    // Set up the event listener
+    const dimensionsListener = Dimensions.addEventListener('change', updateScreenWidth);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      dimensionsListener.remove();
+    };
+  }, []);
 
   const addToOrder = (item: string) => {
     setOrderItems(currentItems => {
