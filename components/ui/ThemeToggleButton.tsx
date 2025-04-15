@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { Colors } from '@/constants/Colors';
@@ -23,30 +24,50 @@ export function ThemeToggleButton({ size = 46 }: ThemeToggleButtonProps) {
   
   const iconSize = size * 0.52;
   
+  // Enhanced glassmorphic effect
+  const renderButtonContent = () => (
+    <LinearGradient
+      colors={colorScheme === 'dark' 
+        ? ['rgba(50, 50, 50, 0.6)', 'rgba(30, 30, 30, 0.4)'] 
+        : ['rgba(255, 255, 255, 0.7)', 'rgba(240, 240, 240, 0.5)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[styles.buttonGradient, { borderRadius: size / 2 }]}>
+      <Ionicons 
+        name={colorScheme === 'dark' ? 'moon' : 'sunny'} 
+        size={iconSize} 
+        color={Colors[colorScheme].tint} 
+      />
+    </LinearGradient>
+  );
+  
+  // Use BlurView for iOS for true glassmorphism, fallback to semi-transparent bg for others
   return (
     <TouchableOpacity 
       style={[
         styles.themeToggleButton,
         buttonSize,
         { 
-          backgroundColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+          backgroundColor: Platform.OS !== 'ios' ? 
+            (colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)') : 
+            'transparent',
           borderColor: colorScheme === 'dark' ? 'rgba(100, 100, 100, 0.8)' : 'rgba(255, 255, 255, 0.8)'
         }
       ]} 
       onPress={toggleTheme}
       activeOpacity={0.7}
     >
-      <LinearGradient
-        colors={colorScheme === 'dark' 
-          ? ['rgba(50, 50, 50, 0.9)', 'rgba(30, 30, 30, 0.7)'] 
-          : ['rgba(255, 255, 255, 0.9)', 'rgba(240, 240, 240, 0.7)']}
-        style={[styles.buttonGradient, { borderRadius: size / 2 }]}>
-        <Ionicons 
-          name={colorScheme === 'dark' ? 'moon' : 'sunny'} 
-          size={iconSize} 
-          color={Colors[colorScheme].tint} 
-        />
-      </LinearGradient>
+      {Platform.OS === 'ios' ? (
+        <BlurView 
+          intensity={colorScheme === 'dark' ? 60 : 80}
+          tint={colorScheme === 'dark' ? 'dark' : 'light'}
+          style={[styles.blurView, { borderRadius: size / 2 }]}
+        >
+          {renderButtonContent()}
+        </BlurView>
+      ) : (
+        renderButtonContent()
+      )}
     </TouchableOpacity>
   );
 }
@@ -61,8 +82,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
     borderWidth: 1,
+    overflow: 'hidden',
   },
   buttonGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  blurView: {
     width: '100%',
     height: '100%',
     justifyContent: 'center',
