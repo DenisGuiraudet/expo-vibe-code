@@ -242,7 +242,6 @@ export default function POSScreen() {
                     { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
                   ]}>
                     <Ionicons name="trash" size={18} color="white" />
-                    <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
                   </TouchableOpacity>
                 </ThemedView>
                 
@@ -316,7 +315,6 @@ export default function POSScreen() {
                   ]}
                 >
                   <Ionicons name="trash" size={18} color="white" />
-                  <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
                 </TouchableOpacity>
               </ThemedView>
               

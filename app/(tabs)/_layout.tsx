@@ -25,6 +25,10 @@ export default function TabLayout() {
           },
           default: {},
         }),
+        // Make all screens transparent to show the snow background
+        contentStyle: {
+          backgroundColor: 'transparent',
+        }
       }}>
       <Tabs.Screen
         name="index"

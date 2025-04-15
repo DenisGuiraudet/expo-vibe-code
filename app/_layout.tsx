@@ -9,6 +9,9 @@ import { View, StyleSheet } from 'react-native';
 
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { useThemeContext } from '@/contexts/ThemeContext';
+import { SnowTextureBackground } from '@/components/ui/SnowTextureBackground';
+import { SnowBackground } from '@/components/ui/SnowBackground';
+import { ThemedView } from '@/components/ThemedView';
 
 // Custom hook to wrap our new ThemeContext
 function CustomThemeNavigationProvider({ children }: { children: React.ReactNode }) {
@@ -16,11 +19,19 @@ function CustomThemeNavigationProvider({ children }: { children: React.ReactNode
   
   return (
     <NavigationThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={styles.container}>
-        {/* Top layer - app content */}
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
+      <View style={styles.rootContainer}>
+        {/* Snow texture background layer */}
+        <SnowTextureBackground intensity="high" />
+        
+        {/* Animated falling snow overlay */}
+        <SnowBackground intensity="medium" />
+        
+        {/* App content container with transparent background */}
+        <ThemedView style={styles.container} transparent>
+          <View style={styles.contentContainer}>
+            {children}
+          </View>
+        </ThemedView>
       </View>
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
     </NavigationThemeProvider>
@@ -58,6 +69,10 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+    position: 'relative',
+  },
   container: {
     flex: 1,
     position: 'relative',
