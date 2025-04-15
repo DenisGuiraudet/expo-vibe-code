@@ -287,19 +287,6 @@ export default function POSScreen() {
             )}
           </View>
         )}
-        
-        {/* Floating Action Button for mobile */}
-        {isSmallScreen && !showCart && orderItems.length > 0 && (
-          <TouchableOpacity 
-            style={styles.fab} 
-            onPress={toggleCart}
-          >
-            <Ionicons name="cart" size={24} color="white" />
-            <View style={styles.fabBadge}>
-              <Text style={styles.fabBadgeText}>{totalItems}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
       </ThemedView>
     </SafeAreaView>
   );
