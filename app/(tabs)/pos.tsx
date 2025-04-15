@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, View, Image, Dimensions, SafeAreaView, Text } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, View, Image, Dimensions, SafeAreaView, Text, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -114,91 +115,146 @@ export default function POSScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ThemedView style={styles.container}>
-        {/* Header */}
-        <ThemedView style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <Image 
-                source={require('@/assets/images/react-logo.png')} 
-                style={styles.logo} 
-                resizeMode="contain"
-              />
-              <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
-            </View>
-            
-            <View style={styles.headerRight}>
-              <ThemedText style={styles.dateText}>April 14, 2025</ThemedText>
-              
-              {/* Cart button for mobile */}
-              {isSmallScreen && (
-                <TouchableOpacity 
-                  style={styles.cartButton} 
-                  onPress={toggleCart}
-                >
-                  <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
-                  {totalItems > 0 && (
-                    <View style={styles.cartBadge}>
-                      <ThemedText style={styles.cartBadgeText}>{totalItems}</ThemedText>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        </ThemedView>
-        
-        {/* Category Selection */}
-        <CategorySelector 
-          categories={categories} 
-          selectedCategory={selectedCategory}
-          onSelectCategory={(category) => setSelectedCategory(category as Category)}
-        />
-        
-        {/* Main Content */}
-        <View style={[
-          styles.contentContainer,
-          isSmallScreen && (showCart ? styles.hiddenContentMobile : styles.visibleContentMobile)
-        ]}>
-          {/* Menu Items */}
-          <View style={[
-            styles.menuItemsContainer,
-            isSmallScreen && styles.menuItemsContainerMobile
-          ]}>
-            <View style={styles.categoryHeader}>
-              <ThemedText type="subtitle">{selectedCategory}</ThemedText>
-              <Ionicons 
-                name={getCategoryIcon(selectedCategory)} 
-                size={24} 
-                color={Colors[colorScheme].tint} 
-              />
-            </View>
-            
-            <ScrollView style={styles.menuScroll}>
-              <View style={[
-                styles.itemsGrid,
-                isSmallScreen ? styles.itemsGridMobile : (screenWidth >= 1200 ? styles.itemsGridLarge : null)
-              ]}>
-                {menuItems[selectedCategory].map((item) => (
-                  <MenuItem
-                    key={item}
-                    name={item}
-                    quantity={getItemQuantity(item)}
-                    onAdd={() => addToOrder(item)}
-                    onRemove={() => removeFromOrder(item)}
-                    category={selectedCategory}
-                  />
-                ))}
+      <LinearGradient
+        colors={['rgba(245, 245, 245, 1)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradientBackground}
+      >
+        <ThemedView style={styles.container}>
+          {/* Header */}
+          <ThemedView style={styles.header}>
+            <View style={styles.headerContent}>
+              <View style={styles.logoContainer}>
+                <Image 
+                  source={require('@/assets/images/react-logo.png')} 
+                  style={styles.logo} 
+                  resizeMode="contain"
+                />
+                <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
               </View>
-            </ScrollView>
+              
+              <View style={styles.headerRight}>
+                <ThemedText style={styles.dateText}>April 14, 2025</ThemedText>
+                
+                {/* Cart button for mobile */}
+                {isSmallScreen && (
+                  <TouchableOpacity 
+                    style={styles.cartButton} 
+                    onPress={toggleCart}
+                  >
+                    <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
+                    {totalItems > 0 && (
+                      <View style={styles.cartBadge}>
+                        <ThemedText style={styles.cartBadgeText}>{totalItems}</ThemedText>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </ThemedView>
+          
+          {/* Category Selection */}
+          <CategorySelector 
+            categories={categories} 
+            selectedCategory={selectedCategory}
+            onSelectCategory={(category) => setSelectedCategory(category as Category)}
+          />
+          
+          {/* Main Content */}
+          <View style={[
+            styles.contentContainer,
+            isSmallScreen && (showCart ? styles.hiddenContentMobile : styles.visibleContentMobile)
+          ]}>
+            {/* Menu Items */}
+            <View style={[
+              styles.menuItemsContainer,
+              isSmallScreen && styles.menuItemsContainerMobile
+            ]}>
+              <View style={styles.categoryHeader}>
+                <ThemedText type="subtitle">{selectedCategory}</ThemedText>
+                <Ionicons 
+                  name={getCategoryIcon(selectedCategory)} 
+                  size={24} 
+                  color={Colors[colorScheme].tint} 
+                />
+              </View>
+              
+              <ScrollView style={styles.menuScroll}>
+                <View style={[
+                  styles.itemsGrid,
+                  isSmallScreen ? styles.itemsGridMobile : (screenWidth >= 1200 ? styles.itemsGridLarge : null)
+                ]}>
+                  {menuItems[selectedCategory].map((item) => (
+                    <MenuItem
+                      key={item}
+                      name={item}
+                      quantity={getItemQuantity(item)}
+                      onAdd={() => addToOrder(item)}
+                      onRemove={() => removeFromOrder(item)}
+                      category={selectedCategory}
+                    />
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+            
+            {/* Order List - only visible on tablet+ by default */}
+            {!isSmallScreen && (
+              <View style={styles.orderContainer}>
+                <ThemedView style={styles.orderHeader}>
+                  <View style={styles.orderHeaderTitle}>
+                    <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
+                    <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
+                  </View>
+                  <TouchableOpacity onPress={clearOrder} style={styles.clearButton}>
+                    <Ionicons name="trash" size={18} color="white" />
+                    <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
+                  </TouchableOpacity>
+                </ThemedView>
+                
+                <ScrollView style={styles.orderItems}>
+                  {orderItems.length > 0 ? (
+                    orderItems.map((item, index) => (
+                      <CartItem
+                        key={index}
+                        name={item.name}
+                        quantity={item.quantity}
+                        onRemove={() => removeFromOrder(item.name)}
+                      />
+                    ))
+                  ) : (
+                    <ThemedText style={styles.emptyOrder}>No items in order</ThemedText>
+                  )}
+                </ScrollView>
+                
+                {orderItems.length > 0 && (
+                  <ThemedView style={styles.orderSummary}>
+                    <View style={styles.subtotalRow}>
+                      <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
+                      <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
+                    </View>
+                    <TouchableOpacity style={styles.checkoutButton}>
+                      <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
+                      <ThemedText style={styles.checkoutText}>
+                        Checkout ({totalItems} items)
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
+                )}
+              </View>
+            )}
           </View>
           
-          {/* Order List - only visible on tablet+ by default */}
-          {!isSmallScreen && (
-            <View style={styles.orderContainer}>
+          {/* Mobile Cart View - only visible when showCart is true */}
+          {isSmallScreen && showCart && (
+            <View style={styles.mobileCartContainer}>
               <ThemedView style={styles.orderHeader}>
                 <View style={styles.orderHeaderTitle}>
-                  <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
+                  <TouchableOpacity onPress={toggleCart} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].tint} />
+                  </TouchableOpacity>
                   <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
                 </View>
                 <TouchableOpacity onPress={clearOrder} style={styles.clearButton}>
@@ -238,56 +294,8 @@ export default function POSScreen() {
               )}
             </View>
           )}
-        </View>
-        
-        {/* Mobile Cart View - only visible when showCart is true */}
-        {isSmallScreen && showCart && (
-          <View style={styles.mobileCartContainer}>
-            <ThemedView style={styles.orderHeader}>
-              <View style={styles.orderHeaderTitle}>
-                <TouchableOpacity onPress={toggleCart} style={styles.backButton}>
-                  <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].tint} />
-                </TouchableOpacity>
-                <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
-              </View>
-              <TouchableOpacity onPress={clearOrder} style={styles.clearButton}>
-                <Ionicons name="trash" size={18} color="white" />
-                <ThemedText style={styles.clearButtonText}>Clear</ThemedText>
-              </TouchableOpacity>
-            </ThemedView>
-            
-            <ScrollView style={styles.orderItems}>
-              {orderItems.length > 0 ? (
-                orderItems.map((item, index) => (
-                  <CartItem
-                    key={index}
-                    name={item.name}
-                    quantity={item.quantity}
-                    onRemove={() => removeFromOrder(item.name)}
-                  />
-                ))
-              ) : (
-                <ThemedText style={styles.emptyOrder}>No items in order</ThemedText>
-              )}
-            </ScrollView>
-            
-            {orderItems.length > 0 && (
-              <ThemedView style={styles.orderSummary}>
-                <View style={styles.subtotalRow}>
-                  <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
-                  <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
-                </View>
-                <TouchableOpacity style={styles.checkoutButton}>
-                  <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
-                  <ThemedText style={styles.checkoutText}>
-                    Checkout ({totalItems} items)
-                  </ThemedText>
-                </TouchableOpacity>
-              </ThemedView>
-            )}
-          </View>
-        )}
-      </ThemedView>
+        </ThemedView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -299,11 +307,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 0,
+    backgroundColor: Colors.light.whiteSmoke, // Using our new white background
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: 'rgba(255, 128, 171, 0.3)', // Soft pink border
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Glassmorphic effect
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   headerContent: {
     flexDirection: 'row',
@@ -326,19 +341,30 @@ const styles = StyleSheet.create({
   },
   smallTitle: {
     fontSize: 18,
+    color: Colors.light.pink, // Pink text for title
+    fontWeight: 'bold',
   },
   dateText: {
     fontSize: 16,
+    color: Colors.light.skyBlue, // Sky blue for date
+    fontWeight: '500',
   },
   cartButton: {
     position: 'relative',
     padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Glassmorphic button
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   cartBadge: {
     position: 'absolute',
     top: 0,
     right: 0,
-    backgroundColor: 'red',
+    backgroundColor: Colors.light.pink, // Pink badge
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -372,6 +398,16 @@ const styles = StyleSheet.create({
   menuItemsContainer: {
     flex: 2,
     marginRight: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   menuItemsContainerMobile: {
     flex: 1,
@@ -384,21 +420,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingBottom: 20,
-    justifyContent: 'flex-start', // Changed back to flex-start for consistent alignment
+    justifyContent: 'flex-start',
     width: '100%',
   },
   itemsGridMobile: {
-    justifyContent: 'space-between', // Keep space-between for mobile since we have exactly 2 items per row
+    justifyContent: 'space-between',
   },
   itemsGridLarge: {
-    justifyContent: 'flex-start', // Use flex-start for large screens for consistent alignment
+    justifyContent: 'flex-start',
   },
   orderContainer: {
     flex: 1,
     borderLeftWidth: 1,
-    borderLeftColor: '#eee',
+    borderLeftColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
     paddingLeft: 16,
-    borderRadius: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)', // Glass border
   },
   mobileCartContainer: {
     position: 'absolute',
@@ -406,7 +451,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white',
+    backgroundColor: Colors.light.whiteSmoke,
     zIndex: 10,
     padding: 16,
     paddingTop: 0,
@@ -417,6 +462,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
   },
   orderHeaderTitle: {
     flexDirection: 'row',
@@ -425,18 +472,29 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Glass effect
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   orderTitle: {
     marginLeft: 4,
+    color: Colors.light.pink, // Pink title
+    fontWeight: 'bold',
   },
   clearButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: 'rgba(255, 107, 107, 0.8)', // Semi-transparent red
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)', // Glass border
   },
   clearButtonText: {
     color: 'white',
@@ -450,12 +508,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
     opacity: 0.6,
+    color: Colors.light.skyBlue, // Sky blue text
   },
   orderSummary: {
     marginTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: 'rgba(129, 212, 250, 0.3)', // Light blue border
     paddingTop: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Glass effect
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   subtotalRow: {
     flexDirection: 'row',
@@ -464,13 +531,15 @@ const styles = StyleSheet.create({
   },
   subtotalText: {
     fontWeight: '600',
+    color: Colors.light.skyBlue, // Sky blue text
   },
   subtotalAmount: {
     fontWeight: '700',
     fontSize: 18,
+    color: Colors.light.pink, // Pink amount
   },
   checkoutButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: 'rgba(129, 212, 250, 0.8)', // Semi-transparent sky blue
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -482,6 +551,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   checkoutText: {
     color: 'white',
@@ -497,7 +568,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#4CAF50',
+    backgroundColor: Colors.light.skyBlue, // Sky blue FAB
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -506,12 +577,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 6,
     zIndex: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.7)', // Glass border
   },
   fabBadge: {
     position: 'absolute',
     top: 0,
     right: 0,
-    backgroundColor: 'red',
+    backgroundColor: Colors.light.pink, // Pink badge
     borderRadius: 12,
     minWidth: 24,
     height: 24,
@@ -522,5 +595,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  gradientBackground: {
+    flex: 1,
   },
 });
