@@ -10,11 +10,11 @@ export function SnowTextureBackground({ intensity = 'medium' }: SnowTextureBackg
   const { width, height } = useWindowDimensions();
   const colorScheme = useColorScheme() ?? 'light';
   
-  // Get base background color based on theme (completely transparent)
+  // Get base background color based on theme (now fully transparent)
   const getBaseColor = () => {
     return colorScheme === 'dark' 
-      ? 'rgba(21, 23, 24, 0.8)'  // Dark mode base - slightly transparent
-      : 'rgba(245, 245, 245, 0.8)'; // Light mode base - slightly transparent
+      ? 'rgba(21, 23, 24, 0)'  // Dark mode base - fully transparent
+      : 'rgba(245, 245, 245, 0)'; // Light mode base - fully transparent
   };
   
   return (
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 0, // Use 0 instead of -1 as negative zIndex often doesn't work as expected
+    zIndex: 0,
   },
   baseBackground: {
     position: 'absolute',

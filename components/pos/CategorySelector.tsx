@@ -55,8 +55,8 @@ export function CategorySelector({
   // Get container background color based on theme
   const getContainerBackground = () => {
     return colorScheme === 'dark'
-      ? 'rgba(30, 30, 30, 0.3)'
-      : 'rgba(255, 255, 255, 0.3)';
+      ? 'rgba(30, 30, 30, 0)' // Fully transparent
+      : 'rgba(255, 255, 255, 0)'; // Fully transparent
   };
   
   // Get container border color based on theme

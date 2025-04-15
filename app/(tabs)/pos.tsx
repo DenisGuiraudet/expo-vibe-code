@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity, View, Image, Dimensions, SafeAreaView, Text, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+// Removed LinearGradient import
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -13,6 +13,8 @@ import { CategorySelector } from '@/components/pos/CategorySelector';
 import { Category, OrderItem } from '@/types/pos';
 import { categories, menuItems, getCategoryIcon } from '@/constants/pos/menuData';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
+import { SnowTextureBackground } from '@/components/ui/SnowTextureBackground';
+import { SnowBackground } from '@/components/ui/SnowBackground';
 
 export default function POSScreen() {
   const [selectedCategory, setSelectedCategory] = React.useState<Category>('Appetizers');
@@ -121,199 +123,119 @@ export default function POSScreen() {
     setShowCart(!showCart);
   };
 
-  // Get gradient colors based on theme
-  const getGradientColors = () => {
-    return colorScheme === 'dark' 
-      ? ['rgba(30, 30, 30, 1)', 'rgba(255, 128, 171, 0.05)', 'rgba(129, 212, 250, 0.05)'] 
-      : ['rgba(245, 245, 245, 1)', 'rgba(255, 128, 171, 0.1)', 'rgba(129, 212, 250, 0.15)'];
-  };
-
   const currentDate = "April 15, 2025";
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        colors={getGradientColors()}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradientBackground}
-      >
-        <ThemedView style={styles.container}>
-          {/* Header */}
-          <ThemedView style={styles.header}>
-            <View style={styles.headerContent}>
-              <View style={styles.logoContainer}>
-                <Image 
-                  source={require('@/assets/images/react-logo.png')} 
-                  style={styles.logo} 
-                  resizeMode="contain"
-                />
-                <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
-              </View>
-              
-              <View style={styles.headerRight}>
-                <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
-                
-                <ThemeToggleButton size={40} />
-                
-                {/* Cart button for mobile */}
-                {isSmallScreen && (
-                  <TouchableOpacity 
-                    style={[styles.cartButton, { backgroundColor: colorScheme === 'dark' ? 'rgba(50, 50, 50, 0.8)' : 'rgba(255, 255, 255, 0.8)' }]} 
-                    onPress={toggleCart}
-                  >
-                    <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
-                    {totalItems > 0 && (
-                      <View style={[styles.cartBadge, { backgroundColor: Colors[colorScheme].pink }]}>
-                        <ThemedText style={styles.cartBadgeText}>{totalItems}</ThemedText>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          </ThemedView>
-          
-          {/* Category Selection */}
-          <CategorySelector 
-            categories={categories} 
-            selectedCategory={selectedCategory}
-            onSelectCategory={(category) => setSelectedCategory(category as Category)}
-          />
-          
-          {/* Main Content */}
-          <View style={[
-            styles.contentContainer,
-            isSmallScreen && (showCart ? styles.hiddenContentMobile : styles.visibleContentMobile)
-          ]}>
-            {/* Menu Items */}
-            <View style={[
-              styles.menuItemsContainer,
-              { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
-              { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
-              isSmallScreen && styles.menuItemsContainerMobile
-            ]}>
-              <View style={styles.categoryHeader}>
-                <ThemedText type="subtitle">{selectedCategory}</ThemedText>
-                <Ionicons 
-                  name={getCategoryIcon(selectedCategory)} 
-                  size={24} 
-                  color={Colors[colorScheme].tint} 
-                />
-              </View>
-              
-              <ScrollView style={styles.menuScroll}>
-                <View style={[
-                  styles.itemsGrid,
-                  isSmallScreen ? styles.itemsGridMobile : (screenWidth >= 1200 ? styles.itemsGridLarge : null)
-                ]}>
-                  {menuItems[selectedCategory].map((item) => (
-                    <MenuItem
-                      key={item}
-                      name={item}
-                      quantity={getItemQuantity(item)}
-                      onAdd={() => addToOrder(item)}
-                      onRemove={() => removeFromOrder(item)}
-                      category={selectedCategory}
-                    />
-                  ))}
-                </View>
-              </ScrollView>
+      {/* Snow texture background layer */}
+      <SnowTextureBackground intensity="high" />
+      
+      {/* Animated falling snow overlay */}
+      <SnowBackground intensity="medium" />
+      
+      <ThemedView style={styles.container}>
+        {/* Header */}
+        <ThemedView style={styles.header}>
+          <View style={styles.headerContent}>
+            <View style={styles.logoContainer}>
+              <Image 
+                source={require('@/assets/images/react-logo.png')} 
+                style={styles.logo} 
+                resizeMode="contain"
+              />
+              <ThemedText type="title" style={isSmallScreen && styles.smallTitle}>Restaurant POS</ThemedText>
             </View>
             
-            {/* Order List - only visible on tablet+ by default */}
-            {!isSmallScreen && (
-              <View style={[
-                styles.orderContainer, 
-                { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
-                { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
-                { borderLeftColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
-              ]}>
-                <ThemedView style={[
-                  styles.orderHeader,
-                  { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
-                ]}>
-                  <View style={styles.orderHeaderTitle}>
-                    <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
-                    <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
-                  </View>
-                  <TouchableOpacity onPress={clearOrder} style={[
-                    styles.clearButton,
-                    { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
-                  ]}>
-                    <Ionicons name="trash" size={18} color="white" />
-                  </TouchableOpacity>
-                </ThemedView>
-                
-                <ScrollView style={styles.orderItems}>
-                  {orderItems.length > 0 ? (
-                    orderItems.map((item, index) => (
-                      <CartItem
-                        key={index}
-                        name={item.name}
-                        quantity={item.quantity}
-                        onRemove={() => removeFromOrder(item.name)}
-                      />
-                    ))
-                  ) : (
-                    <ThemedText style={styles.emptyOrder}>No items in order</ThemedText>
-                  )}
-                </ScrollView>
-                
-                {orderItems.length > 0 && (
-                  <ThemedView style={[
-                    styles.orderSummary,
-                    { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
-                    { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
-                  ]}>
-                    <View style={styles.subtotalRow}>
-                      <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
-                      <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
+            <View style={styles.headerRight}>
+              <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
+              
+              <ThemeToggleButton size={40} />
+              
+              {/* Cart button for mobile */}
+              {isSmallScreen && (
+                <TouchableOpacity 
+                  style={[styles.cartButton, { backgroundColor: colorScheme === 'dark' ? 'rgba(50, 50, 50, 0.8)' : 'rgba(255, 255, 255, 0.8)' }]} 
+                  onPress={toggleCart}
+                >
+                  <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
+                  {totalItems > 0 && (
+                    <View style={[styles.cartBadge, { backgroundColor: Colors[colorScheme].pink }]}>
+                      <ThemedText style={styles.cartBadgeText}>{totalItems}</ThemedText>
                     </View>
-                    <TouchableOpacity style={[
-                      styles.checkoutButton,
-                      { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
-                    ]}>
-                      <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
-                      <ThemedText style={styles.checkoutText}>
-                        Checkout ({totalItems} items)
-                      </ThemedText>
-                    </TouchableOpacity>
-                  </ThemedView>
-                )}
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </ThemedView>
+        
+        {/* Category Selection */}
+        <CategorySelector 
+          categories={categories} 
+          selectedCategory={selectedCategory}
+          onSelectCategory={(category) => setSelectedCategory(category as Category)}
+        />
+        
+        {/* Main Content */}
+        <View style={[
+          styles.contentContainer,
+          isSmallScreen && (showCart ? styles.hiddenContentMobile : styles.visibleContentMobile)
+        ]}>
+          {/* Menu Items */}
+          <View style={[
+            styles.menuItemsContainer,
+            { backgroundColor: 'transparent' }, // Changed to transparent
+            { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
+            isSmallScreen && styles.menuItemsContainerMobile
+          ]}>
+            <View style={styles.categoryHeader}>
+              <ThemedText type="subtitle">{selectedCategory}</ThemedText>
+              <Ionicons 
+                name={getCategoryIcon(selectedCategory)} 
+                size={24} 
+                color={Colors[colorScheme].tint} 
+              />
+            </View>
+            
+            <ScrollView style={styles.menuScroll}>
+              <View style={[
+                styles.itemsGrid,
+                isSmallScreen ? styles.itemsGridMobile : (screenWidth >= 1200 ? styles.itemsGridLarge : null)
+              ]}>
+                {menuItems[selectedCategory].map((item) => (
+                  <MenuItem
+                    key={item}
+                    name={item}
+                    quantity={getItemQuantity(item)}
+                    onAdd={() => addToOrder(item)}
+                    onRemove={() => removeFromOrder(item)}
+                    category={selectedCategory}
+                  />
+                ))}
               </View>
-            )}
+            </ScrollView>
           </View>
           
-          {/* Mobile Cart View - only visible when showCart is true */}
-          {isSmallScreen && showCart && (
+          {/* Order List - only visible on tablet+ by default */}
+          {!isSmallScreen && (
             <View style={[
-              styles.mobileCartContainer,
-              { backgroundColor: colorScheme === 'dark' ? Colors.dark.background : Colors.light.whiteSmoke }
+              styles.orderContainer, 
+              { backgroundColor: 'transparent' }, // Changed from solid color to transparent
+              { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.8)' : 'rgba(255, 255, 255, 0.8)' },
+              { borderLeftColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
             ]}>
               <ThemedView style={[
                 styles.orderHeader,
                 { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
               ]}>
                 <View style={styles.orderHeaderTitle}>
-                  <TouchableOpacity 
-                    onPress={toggleCart} 
-                    style={[
-                      styles.backButton,
-                      { backgroundColor: colorScheme === 'dark' ? 'rgba(60, 60, 60, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
-                    ]}
-                  >
-                    <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].tint} />
-                  </TouchableOpacity>
-                  <ThemedText type="subtitle">Current Order</ThemedText>
+                  <Ionicons name="cart" size={24} color={Colors[colorScheme].tint} />
+                  <ThemedText type="subtitle" style={styles.orderTitle}>Current Order</ThemedText>
                 </View>
-                <TouchableOpacity 
-                  onPress={clearOrder} 
-                  style={[
-                    styles.clearButton,
-                    { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
-                  ]}
-                >
+                <TouchableOpacity onPress={clearOrder} style={[
+                  styles.clearButton,
+                  { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
+                ]}>
                   <Ionicons name="trash" size={18} color="white" />
                 </TouchableOpacity>
               </ThemedView>
@@ -336,7 +258,7 @@ export default function POSScreen() {
               {orderItems.length > 0 && (
                 <ThemedView style={[
                   styles.orderSummary,
-                  { backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.5)' : 'rgba(255, 255, 255, 0.5)' },
+                  { backgroundColor: 'transparent' }, // Changed from solid color to transparent
                   { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
                 ]}>
                   <View style={styles.subtotalRow}>
@@ -356,8 +278,80 @@ export default function POSScreen() {
               )}
             </View>
           )}
-        </ThemedView>
-      </LinearGradient>
+        </View>
+        
+        {/* Mobile Cart View - only visible when showCart is true */}
+        {isSmallScreen && showCart && (
+          <View style={[
+            styles.mobileCartContainer,
+            { backgroundColor: 'transparent' } // Changed from solid color to transparent
+          ]}>
+            <ThemedView style={[
+              styles.orderHeader,
+              { borderBottomColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+            ]}>
+              <View style={styles.orderHeaderTitle}>
+                <TouchableOpacity 
+                  onPress={toggleCart} 
+                  style={[
+                    styles.backButton,
+                    { backgroundColor: colorScheme === 'dark' ? 'rgba(60, 60, 60, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
+                  ]}
+                >
+                  <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].tint} />
+                </TouchableOpacity>
+                <ThemedText type="subtitle">Current Order</ThemedText>
+              </View>
+              <TouchableOpacity 
+                onPress={clearOrder} 
+                style={[
+                  styles.clearButton,
+                  { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.5)' : 'rgba(255, 255, 255, 0.5)' }
+                ]}
+              >
+                <Ionicons name="trash" size={18} color="white" />
+              </TouchableOpacity>
+            </ThemedView>
+            
+            <ScrollView style={styles.orderItems}>
+              {orderItems.length > 0 ? (
+                orderItems.map((item, index) => (
+                  <CartItem
+                    key={index}
+                    name={item.name}
+                    quantity={item.quantity}
+                    onRemove={() => removeFromOrder(item.name)}
+                  />
+                ))
+              ) : (
+                <ThemedText style={styles.emptyOrder}>No items in order</ThemedText>
+              )}
+            </ScrollView>
+            
+            {orderItems.length > 0 && (
+              <ThemedView style={[
+                styles.orderSummary,
+                { backgroundColor: 'transparent' }, // Changed to transparent to show snow
+                { borderTopColor: colorScheme === 'dark' ? 'rgba(129, 212, 250, 0.15)' : 'rgba(129, 212, 250, 0.3)' }
+              ]}>
+                <View style={styles.subtotalRow}>
+                  <ThemedText style={styles.subtotalText}>Subtotal:</ThemedText>
+                  <ThemedText style={styles.subtotalAmount}>${subtotal.toFixed(2)}</ThemedText>
+                </View>
+                <TouchableOpacity style={[
+                  styles.checkoutButton,
+                  { borderColor: colorScheme === 'dark' ? 'rgba(70, 70, 70, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
+                ]}>
+                  <Ionicons name="card" size={20} color="white" style={styles.checkoutIcon} />
+                  <ThemedText style={styles.checkoutText}>
+                    Checkout ({totalItems} items)
+                  </ThemedText>
+                </TouchableOpacity>
+              </ThemedView>
+            )}
+          </View>
+        )}
+      </ThemedView>
     </SafeAreaView>
   );
 }
@@ -365,15 +359,18 @@ export default function POSScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
     paddingTop: 0,
+    backgroundColor: 'transparent',
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 128, 171, 0.3)', // Soft pink border
+    backgroundColor: 'transparent',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -444,6 +441,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingBottom: 16,
+    backgroundColor: 'transparent',
   },
   visibleContentMobile: {
     display: 'flex',
@@ -466,9 +464,11 @@ const styles = StyleSheet.create({
   menuItemsContainerMobile: {
     flex: 1,
     marginRight: 0,
+    backgroundColor: 'transparent',
   },
   menuScroll: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   itemsGrid: {
     flexDirection: 'row',
@@ -632,8 +632,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
-  },
-  gradientBackground: {
-    flex: 1,
-  },
+  }
+  // Removed gradientBackground style
 });

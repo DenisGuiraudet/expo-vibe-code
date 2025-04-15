@@ -18,8 +18,8 @@ export function CartItem({ name, quantity, onRemove }: CartItemProps) {
   // Get gradient colors based on theme
   const getGradientColors = () => {
     return colorScheme === 'dark'
-      ? ['rgba(50, 50, 50, 0.7)', 'rgba(40, 40, 40, 0.4)']
-      : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.4)'];
+      ? ['rgba(50, 50, 50, 0.4)', 'rgba(40, 40, 40, 0.2)'] // More transparent
+      : ['rgba(255, 255, 255, 0.4)', 'rgba(255, 255, 255, 0.2)']; // More transparent
   };
 
   // Get border color based on theme

@@ -25,8 +25,8 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
   // Get gradient colors based on category and theme
   const getCategoryGradient = (category: string) => {
     // Base opacity adjustments for dark mode
-    const opacityAdjust = colorScheme === 'dark' ? 0.2 : 0.4;
-    const opacityAdjustLow = colorScheme === 'dark' ? 0.05 : 0.1;
+    const opacityAdjust = colorScheme === 'dark' ? 0.1 : 0.2; // Reduced opacity
+    const opacityAdjustLow = colorScheme === 'dark' ? 0.03 : 0.05; // Reduced opacity
     
     switch(category) {
       case 'Appetizers':
@@ -41,22 +41,22 @@ export function MenuItem({ name, quantity, onAdd, onRemove, category }: MenuItem
         ]; // Sky blue gradient
       case 'Desserts':
         return [
-          `rgba(255, 128, 171, ${opacityAdjust + 0.1})`, 
-          `rgba(255, 128, 171, ${opacityAdjustLow + 0.1})`
+          `rgba(255, 128, 171, ${opacityAdjust + 0.05})`, 
+          `rgba(255, 128, 171, ${opacityAdjustLow + 0.05})`
         ]; // Darker pink gradient
       case 'Beverages':
         return [
-          `rgba(129, 212, 250, ${opacityAdjust + 0.1})`, 
-          `rgba(129, 212, 250, ${opacityAdjustLow + 0.1})`
+          `rgba(129, 212, 250, ${opacityAdjust + 0.05})`, 
+          `rgba(129, 212, 250, ${opacityAdjustLow + 0.05})`
         ]; // Darker sky blue gradient
       case 'Specials':
         return colorScheme === 'dark' 
-          ? ['rgba(180, 160, 200, 0.3)', 'rgba(180, 160, 200, 0.1)']  // Dark purple for dark mode
-          : ['rgba(243, 229, 245, 0.6)', 'rgba(243, 229, 245, 0.3)']; // Light purple for light mode
+          ? ['rgba(180, 160, 200, 0.15)', 'rgba(180, 160, 200, 0.05)']  // Dark purple for dark mode
+          : ['rgba(243, 229, 245, 0.3)', 'rgba(243, 229, 245, 0.15)']; // Light purple for light mode
       default:
         return colorScheme === 'dark'
-          ? ['rgba(70, 70, 70, 0.7)', 'rgba(50, 50, 50, 0.3)']       // Dark gray for dark mode
-          : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.3)']; // White for light mode
+          ? ['rgba(70, 70, 70, 0.3)', 'rgba(50, 50, 50, 0.15)']       // Dark gray for dark mode
+          : ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']; // White for light mode
     }
   };
   
